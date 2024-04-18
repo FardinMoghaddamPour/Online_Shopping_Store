@@ -269,3 +269,45 @@ class Cart(TimeStampMixin, LogicalMixin, models.Model):
 
         self.total_price = total_price
         self.save(update_fields=['total_price'])
+
+
+class Wishlist(TimeStampMixin, models.Model):
+
+    user = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name='wishlists'
+    )
+
+    name = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Wishlist'
+        verbose_name_plural = 'Wishlists'
+
+    def __str__(self):
+        return f'{self.name} - {self.user}'
+
+
+class WishlistProduct(models.Model):
+
+    wishlist = models.ForeignKey(
+        Wishlist,
+        on_delete=models.CASCADE,
+        related_name='wishlist_products'
+    )
+
+    product = models.ForeignKey(
+        'Product',
+        on_delete=models.CASCADE,
+        related_name='wishlists'
+    )
+
+    class Meta:
+        verbose_name = 'Wishlist Product'
+        verbose_name_plural = 'Wishlist Products'
+
+    def __str__(self):
+        return f'{self.wishlist.user.username} - {self.product.name}'
