@@ -1,8 +1,10 @@
 from account.models import CustomUser
 from core.models import LogicalMixin, TimeStampMixin
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from utils.coupon_generator import generate_coupon_code
 
 
 class Category(models.Model):
@@ -83,3 +85,103 @@ class Product(TimeStampMixin, LogicalMixin, models.Model):
         self.is_active = False
         self.save(update_fields=['is_active'])
         super().delete(using=using, keep_parents=keep_parents)
+
+
+class Discount(models.Model):
+    product = models.OneToOneField(Product, on_delete=models.CASCADE, related_name='discount')
+    discount_percentage = models.DecimalField(max_digits=5, decimal_places=2)
+
+    class Meta:
+        verbose_name = 'Discount'
+        verbose_name_plural = 'Discounts'
+
+    def __str__(self):
+        return f"Discount for {self.product.name} - {self.discount_percentage}%"
+
+
+class Order(models.Model):
+    order_date = models.DateTimeField(auto_now_add=True)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    class Meta:
+        verbose_name = 'Order'
+        verbose_name_plural = 'Orders'
+
+    def __str__(self):
+        return f'Order - {self.order_date}'
+
+
+class OrderItem(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='order_items')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_items')
+    quantity = models.PositiveIntegerField(default=1)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        verbose_name = 'Order Item'
+        verbose_name_plural = 'Order Items'
+
+    def __str__(self):
+        return f'{self.product.name} - {self.quantity} units'
+
+    def save(self, *args, **kwargs):
+
+        if self.quantity > self.product.quantity:
+            raise ValidationError(f"Insufficient quantity available for {self.product.name}.")
+
+        self.price = self.product.price * self.quantity
+
+        super().save(*args, **kwargs)
+
+
+class Coupon(models.Model):
+    coupon_code = models.CharField(
+        max_length=8,
+        unique=True,
+        default=generate_coupon_code,
+        help_text="Automatically generated alphanumeric coupon code"
+    )
+    amount_of_discount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(1), MaxValueValidator(1000000)],
+        help_text="Amount of discount in dollars (between $1 and $1,000,000)"
+    )
+    is_active = models.BooleanField(default=True)
+    rarity = models.CharField(
+        max_length=20,
+        choices=(
+            ('Common', 'Common'),
+            ('Uncommon', 'Uncommon'),
+            ('Rare', 'Rare'),
+            ('Epic', 'Epic'),
+            ('Legendary', 'Legendary'),
+        ),
+        blank=True,
+        null=True,
+        editable=False,
+        help_text="Rarity level based on amount of discount"
+    )
+
+    def __str__(self):
+        return f"{self.coupon_code} - {self.amount_of_discount}"
+
+    def save(self, *args, **kwargs):
+        if 1 <= self.amount_of_discount <= 10:
+            self.rarity = 'Common'
+        elif 11 <= self.amount_of_discount <= 100:
+            self.rarity = 'Uncommon'
+        elif 101 <= self.amount_of_discount <= 1000:
+            self.rarity = 'Rare'
+        elif 1001 <= self.amount_of_discount <= 10000:
+            self.rarity = 'Epic'
+        elif 10001 <= self.amount_of_discount <= 1000000:
+            self.rarity = 'Legendary'
+        else:
+            self.rarity = None
+
+        super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = 'Coupon'
+        verbose_name_plural = 'Coupons'
