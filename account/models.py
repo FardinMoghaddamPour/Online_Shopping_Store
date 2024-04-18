@@ -80,3 +80,54 @@ user_permissions = models.ManyToManyField(
     related_name="custom_user_permissions",
     help_text='Specific permissions for this user.'
 )
+
+
+class Address(LogicalMixin, models.Model):
+
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='addresses')
+    country = models.CharField(max_length=100)
+    city = models.CharField(max_length=100)
+    address = models.TextField()
+    zipcode = models.CharField(max_length=20)
+    is_active = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = 'Address'
+        verbose_name_plural = 'Addresses'
+        unique_together = ('user', 'is_active')
+
+    def __str__(self):
+        return f"{self.country}, {self.city} - {self.address}"
+
+    def save(self, *args, **kwargs):
+        if self.is_active:
+            Address.objects.filter(user=self.user, is_active=True).exclude(id=self.id).update(is_active=False)
+        super().save(*args, **kwargs)
+
+    def delete(self, using=None, keep_parents=False):
+        """
+        Delete the instance.
+
+        Args:
+            using (str): Database alias. (Not actively used in this implementation)
+            keep_parents (bool): If True, other related objects are not deleted.
+                                 (Not actively used in this implementation)
+        """
+        if using:
+            # ToDo: Perform delete operation using the specified database alias
+            pass
+
+        if keep_parents:
+            # ToDo: Implement logic to keep related objects when deleting
+            pass
+
+        self.is_deleted = True
+        self.is_active = False
+        self.save(update_fields=['is_deleted', 'is_active'])
+
+    def activate(self):
+        if not self.is_active:
+            Address.objects.filter(user=self.user, is_active=True).update(is_active=False)
+            self.is_active = True
+            self.save(update_fields=['is_active'])
