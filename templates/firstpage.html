@@ -1,10 +1,97 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Welcome to My Django Project</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Shop</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Custom CSS for hover effect */
+        .hover-scale {
+            transition: transform 0.3s ease;
+        }
+
+        .hover-scale:hover {
+            transform: scale(1.05);
+        }
+
+        /* Ensure footer stays at the bottom */
+        html {
+            min-height: 100%;
+            position: relative;
+        }
+
+        body {
+            margin: 0;
+            padding-bottom: 60px;
+            /* Height of the footer */
+            font-family: 'Arial', sans-serif;
+            background-color: #f7fafc;
+            /* Light gray background */
+        }
+
+        footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 60px;
+            /* Height of the footer */
+            background-color: #333;
+            /* Dark gray footer background */
+            color: #fff;
+            /* White text color */
+            text-align: center;
+            padding-top: 20px;
+            /* Vertical padding */
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Welcome to My Django Project</h1>
-    <p>This is a basic homepage.</p>
+    <header class="bg-blue-500 text-white py-4">
+        <div class="container mx-auto flex justify-between items-center px-4">
+            <a href="/" class="text-xl font-bold">Online Shop</a>
+            <nav>
+                <a href="#" class="mx-2 hover:underline">Home</a>
+                <a href="#" class="mx-2 hover:underline">Products</a>
+                <a href="#" class="mx-2 hover:underline">About</a>
+                <a href="#" class="mx-2 hover:underline">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto my-8 px-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Sample Product Cards -->
+            <div class="bg-white rounded-lg shadow-md p-4 hover-scale">
+                <img src="product1.jpg" alt="Product Image" class="w-full h-40 object-cover mb-4">
+                <h3 class="text-lg font-semibold mb-2">Product 1</h3>
+                <p class="text-gray-600 mb-2">Description of Product 1.</p>
+                <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Buy Now</button>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-4 hover-scale">
+                <img src="product2.jpg" alt="Product Image" class="w-full h-40 object-cover mb-4">
+                <h3 class="text-lg font-semibold mb-2">Product 2</h3>
+                <p class="text-gray-600 mb-2">Description of Product 2.</p>
+                <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Buy Now</button>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-4 hover-scale">
+                <img src="product3.jpg" alt="Product Image" class="w-full h-40 object-cover mb-4">
+                <h3 class="text-lg font-semibold mb-2">Product 3</h3>
+                <p class="text-gray-600 mb-2">Description of Product 3.</p>
+                <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Buy Now</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container mx-auto">
+            &copy; 2024 Online Shop. All rights reserved.
+        </div>
+    </footer>
 </body>
+
 </html>
