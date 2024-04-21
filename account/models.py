@@ -90,12 +90,10 @@ class Address(LogicalMixin, models.Model):
     address = models.TextField()
     zipcode = models.CharField(max_length=20)
     is_active = models.BooleanField(default=False)
-    is_deleted = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = 'Address'
         verbose_name_plural = 'Addresses'
-        unique_together = ('user', 'is_active')
 
     def __str__(self):
         return f"{self.country}, {self.city} - {self.address}"
