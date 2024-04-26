@@ -46,7 +46,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, TimeStampMixin, LogicalMixi
     # Override default fields
 
     EMAIL_FIELD = 'email'
-    USERNAME_FIELD = 'username'
+    USERNAME_FIELD = 'phone_number'
     REQUIRED_FIELDS = []
 
     class Meta:
