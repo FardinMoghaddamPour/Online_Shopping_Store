@@ -47,7 +47,7 @@ class Product(TimeStampMixin, LogicalMixin, models.Model):
     about = models.TextField()
     quantity = models.PositiveIntegerField(default=0)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     is_deleted = models.BooleanField(default=False)
 
     class Meta:
@@ -56,6 +56,13 @@ class Product(TimeStampMixin, LogicalMixin, models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if self.inventory:
+            current_count = self.inventory.product.count()
+            if current_count >= self.inventory.capacity:
+                raise ValidationError('Inventory capacity exceeded for this product.')
+        super().save(*args, **kwargs)
 
     def delete(self, using=None, keep_parents=False):
         """
