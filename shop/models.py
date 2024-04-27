@@ -2,7 +2,7 @@ from account.models import CustomUser, Address
 from core.models import LogicalMixin, TimeStampMixin
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.db import models
+from django.db import models, IntegrityError
 from django.utils.translation import gettext_lazy as _
 from utils.coupon_generator import generate_coupon_code
 
@@ -33,29 +33,8 @@ class Inventory(models.Model):
         return self.name
 
     def clean(self):
-        # Check if the capacity is valid (greater than zero)
         if self.capacity <= 0:
             raise ValidationError(_('Capacity must be a positive integer.'))
-
-    def save(self, *args, **kwargs):
-        # Ensure that the inventory's capacity is not exceeded
-        if self.product:
-            current_count = self.product.inventory_set.count()
-            if current_count >= self.capacity:
-                raise ValidationError(_('Inventory capacity exceeded for this product.'))
-        super().save(*args, **kwargs)
-
-    def can_accept_product(self):
-        """
-        Check if the inventory can accept a new product.
-
-        Returns:
-            bool: True if the inventory can accept a new product, False otherwise.
-        """
-        if self.product:
-            current_count = self.product.inventory_set.count()
-            return current_count < self.capacity
-        return False
 
 
 class Product(TimeStampMixin, LogicalMixin, models.Model):
@@ -167,6 +146,15 @@ class Coupon(models.Model):
         return f"{self.coupon_code} - {self.amount_of_discount}"
 
     def save(self, *args, **kwargs):
+
+        while not self.coupon_code:
+            code = generate_coupon_code()
+            try:
+                self.coupon_code = code
+                super().save(*args, **kwargs)
+            except IntegrityError:
+                pass
+
         if 1 <= self.amount_of_discount <= 10:
             self.rarity = 'Common'
         elif 11 <= self.amount_of_discount <= 100:
