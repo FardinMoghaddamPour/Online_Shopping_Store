@@ -1,11 +1,107 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>footer</title>
-</head>
-<body>
-    
-</body>
-</html>
+{% load static%}
+<footer class="bg-gray-900 text-gray-200">
+    <div class="container mx-auto py-14 px-6">
+        <div class="grid md:grid-cols-12 grid-cols-1 gap-7">
+            <div class="lg:col-span-4 col-span-12">
+                <a href="">
+                    <img class="h-12" alt="WebSiteLogo" src={% static 'Images/WebSiteLogo.png' %}>
+                </a>
+                <p class="mt-6">
+                    This website is inspired by Amazon and Digikala. It is an online shopping store.
+                    Drawing inspiration from these giants, we aim to provide a seamless shopping experience.
+                </p>
+                <div class="flex flex-row items-center space-x-4">
+                    <a href="">
+                        <img  class="h-[50px]" alt="Telegram-Logo" src={% static 'Images/TelegramLogo.png' %}>
+                    </a>
+                    <a href="">
+                        <img  class="h-16" alt="Instagram-Logo" src={% static 'Images/InstagramLogo.png' %}>
+                    </a>
+                    <a href="">
+                        <img  class="h-[59px]" alt="Twitter-Logo" src={% static 'Images/TwitterLogo.png' %}>
+                    </a>
+                    <a href="">
+                        <img  class="h-16" alt="Github-Logo" src={% static 'Images/GithubLogo.png' %}>
+                    </a>
+                </div>
+            </div>
+            <div class="lg:col-span-2 md:col-span-4 col-span-12">
+                <h5 class="tracking-wide text-gray-100 font-semibold">Online Shopping Store</h5>
+                <ul class="list-none mt-6 space-y-2">
+                    <li>
+                        <a href="#" class="text-gray-300 hover:text-gray-400 transition-all duration-500 ease-in-out">
+                            Products
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="text-gray-300 hover:text-gray-400 transition-all duration-500 ease-in-out">
+                            Solution
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="text-gray-300 hover:text-gray-400 transition-all duration-500 ease-in-out">
+                            Resource
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="text-gray-300 hover:text-gray-400 transition-all duration-500 ease-in-out">
+                            Developers
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="text-gray-300 hover:text-gray-400 transition-all duration-500 ease-in-out">
+                            Pricing
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="lg:col-span-3 md:col-span-4 col-span-12">
+                <h5 class="tracking-wide text-gray-100 font-semibold">
+                    Important Links
+                </h5>
+                <ul class="list-none space-y-2 mt-6">
+                    <li>
+                        <a href="#" class="hover:text-gray-400 transition-all duration-500 ease-in-out">
+                            Terms of Services
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="hover:text-gray-400 transition-all duration-500 ease-in-out">
+                            Privacy Policy
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="hover:text-gray-400 transition-all duration-500 ease-in-out">
+                            Documentation
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="lg:col-span-3 md:col-span-4 col-span-12">
+                <h5 class="tracking-wide text-gray-100 font-semibold">
+                    Newsletter
+                </h5>
+                <p class="mt-6">Sign up and receive the latest tips via email</p>
+                <form action="">
+                    <div>
+                        <label for="email-input">Write your email <span class="text-red-600">*</span></label>
+                        <input type="email" id="email-input"
+                            class="mt-3 w-full py-2 px-3 h-10 bg-transparent rounded outline-none border border-gray-500 focus:border-[#FFCDA3] focus:ring-0"
+                            placeholder="name@example.com">
+                    </div>
+                    <input type="submit"
+                        class="py-2 px-5 tracking-wide border duration-500 text-base text-center bg-[#FFCDA3] hover:bg-[#FFCD88] border-[#FFCDA3] hover:border-[#FFCD88] text-black rounded-md w-full mt-2 cursor-pointer">
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="border-t border-slate-700">
+        <div class="md:text-left text-center container mx-auto py-7 px-6">
+            <p class="mb-0">
+                &copy;
+                <span id="span-year"></span>
+                Online Shopping Store. All rights reserved.
+            </p>
+        </div>
+    </div>
+</footer>

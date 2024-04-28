@@ -1,11 +1,37 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>base</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    {#Fonts#}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+    <title> {% block title %} Online Shopping Store {% endblock %} </title>
 </head>
-<body>
-    
+
+<body class="font-[Poppins] bg-gradient-to-t from-[#fbc2eb] to-[#a6c1ee] h-screen">
+    <section id="Header-Section">
+        {% include 'layout/header.html' %}
+    </section>
+
+    <section id="Body-Section">
+        {% block content %} {% endblock %}
+    </section>
+
+    <section id="Footer-Section">
+        {% include 'layout/footer.html' %}
+    </section>
+
+    {#Include script#}
+        <script src="{% static 'JS/header.js' %}"></script>
+        <script src="{% static 'JS/footer.js' %}"></script>
 </body>
+
 </html>
