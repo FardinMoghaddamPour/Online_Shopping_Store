@@ -246,8 +246,6 @@ class Cart(TimeStampMixin, LogicalMixin, models.Model):
                     if product.quantity >= item.quantity:
                         product.quantity -= item.quantity
                         product.save(update_fields=['quantity'])
-                    else:
-                        raise ValidationError(f"Insufficient quantity available for {product.name}.")
 
         super().save(*args, **kwargs)
 
