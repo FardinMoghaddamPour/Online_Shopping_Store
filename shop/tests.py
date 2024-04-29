@@ -1,8 +1,11 @@
-from django.test import TestCase
+from account.models import CustomUser
 from .models import (
     Category,
-    Inventory
+    Inventory,
+    Product
 )
+from django.test import TestCase
+from decimal import Decimal
 
 
 class CategoryModelTest(TestCase):
@@ -82,3 +85,85 @@ class InventoryModelTest(TestCase):
         # noinspection PyTypeChecker
         with self.assertRaises(Inventory.DoesNotExist):
             Inventory.objects.get(name='Test Inventory')
+
+
+class ProductModelTest(TestCase):
+
+    def setUp(self):
+        self.user = CustomUser.objects.create(username='test_user', email='test@example.com')
+        self.category = Category.objects.create(name='Test Category')
+        self.inventory = Inventory.objects.create(name='Test Inventory', capacity=100)
+
+    def test_create_product(self):
+
+        product = Product.objects.create(
+            category=self.category,
+            user=self.user,
+            inventory=self.inventory,
+            name='Test Product',
+            about='Test Description',
+            quantity=50,
+            price=10.99
+        )
+
+        self.assertEqual(product.name, 'Test Product')
+        self.assertEqual(product.quantity, 50)
+        self.assertEqual(product.price, 10.99)
+
+    def test_read_product(self):
+
+        product = Product.objects.create(
+            category=self.category,
+            user=self.user,
+            inventory=self.inventory,
+            name='Test Product',
+            about='Test Description',
+            quantity=50,
+            price=10.99
+        )
+
+        retrieved_product = Product.objects.get(name='Test Product')
+
+        self.assertEqual(product, retrieved_product)
+
+    def test_update_product(self):
+
+        product = Product.objects.create(
+            category=self.category,
+            user=self.user,
+            inventory=self.inventory,
+            name='Test Product',
+            about='Test Description',
+            quantity=50,
+            price=10.99
+        )
+
+        product.name = 'Updated Test Product'
+        product.price = 15.99
+        product.save()
+
+        updated_product = Product.objects.get(name='Updated Test Product')
+
+        self.assertEqual(updated_product.name, 'Updated Test Product')
+        self.assertEqual(updated_product.price, Decimal('15.99'))
+
+    def test_delete_product(self):
+
+        product = Product.objects.create(
+            category=self.category,
+            user=self.user,
+            inventory=self.inventory,
+            name='Test Product',
+            about='Test Description',
+            quantity=50,
+            price=10.99
+        )
+
+        product.delete()
+
+        # noinspection PyTypeChecker
+        with self.assertRaises(Product.DoesNotExist):
+            Product.objects.get(name='Test Product')
+
+        self.assertFalse(product.is_active)
+        self.assertTrue(product.is_deleted)
