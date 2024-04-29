@@ -10,7 +10,8 @@ from .models import (
     Order,
     OrderItem,
     Coupon,
-    Cart
+    Cart,
+    Wishlist
 )
 from django.core.exceptions import ValidationError
 from django.test import TestCase
@@ -501,3 +502,49 @@ class CartModelTest(TestCase):
         self.assertFalse(cart.is_active)
 
         self.assertEqual(updated_product.quantity, initial_quantity - self.order_item.quantity)
+
+
+class WishlistTestCase(TestCase):
+
+    def setUp(self):
+        # Create a user for testing
+        self.user = CustomUser.objects.create(username='test-user', email='test@example.com')
+
+    def test_create_wishlist(self):
+
+        wishlist = Wishlist.objects.create(user=self.user, name='Test Wishlist')
+
+        saved_wishlist = Wishlist.objects.get(id=wishlist.id)
+
+        self.assertEqual(saved_wishlist.name, 'Test Wishlist')
+        self.assertEqual(saved_wishlist.user, self.user)
+
+    def test_read_wishlist(self):
+
+        wishlist = Wishlist.objects.create(user=self.user, name='Test Wishlist')
+
+        retrieved_wishlist = Wishlist.objects.get(id=wishlist.id)
+
+        self.assertEqual(retrieved_wishlist.name, 'Test Wishlist')
+        self.assertEqual(retrieved_wishlist.user, self.user)
+
+    def test_update_wishlist(self):
+
+        wishlist = Wishlist.objects.create(user=self.user, name='Test Wishlist')
+
+        wishlist.name = 'Updated Wishlist'
+        wishlist.save()
+
+        updated_wishlist = Wishlist.objects.get(id=wishlist.id)
+
+        self.assertEqual(updated_wishlist.name, 'Updated Wishlist')
+
+    def test_delete_wishlist(self):
+
+        wishlist = Wishlist.objects.create(user=self.user, name='Test Wishlist')
+
+        wishlist.delete()
+
+        # noinspection PyTypeChecker
+        with self.assertRaises(Wishlist.DoesNotExist):
+            Wishlist.objects.get(id=wishlist.id)
