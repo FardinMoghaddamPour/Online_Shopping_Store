@@ -2,7 +2,8 @@ from account.models import CustomUser
 from .models import (
     Category,
     Inventory,
-    Product
+    Product,
+    Discount
 )
 from django.test import TestCase
 from decimal import Decimal
@@ -167,3 +168,58 @@ class ProductModelTest(TestCase):
 
         self.assertFalse(product.is_active)
         self.assertTrue(product.is_deleted)
+
+
+class DiscountModelTest(TestCase):
+
+    def setUp(self):
+
+        category = Category.objects.create(name='Test Category')
+        user = CustomUser.objects.create(username='test_user')
+        inventory = Inventory.objects.create(name='Test Inventory', capacity=100)
+
+        self.product = Product.objects.create(
+            category=category,
+            user=user,
+            inventory=inventory,
+            name='Test Product',
+            about='Test Description',
+            quantity=50,
+            price=10.99
+        )
+
+    def test_create_discount(self):
+
+        discount = Discount.objects.create(product=self.product, discount_percentage=20.00)
+
+        self.assertEqual(discount.product.name, 'Test Product')
+        self.assertEqual(discount.discount_percentage, 20.00)
+
+    def test_read_discount(self):
+
+        discount = Discount.objects.create(product=self.product, discount_percentage=20.00)
+
+        retrieved_discount = Discount.objects.get(product=self.product)
+
+        self.assertEqual(discount, retrieved_discount)
+
+    def test_update_discount(self):
+
+        discount = Discount.objects.create(product=self.product, discount_percentage=20.00)
+
+        discount.discount_percentage = 30.00
+        discount.save()
+
+        updated_discount = Discount.objects.get(product=self.product)
+
+        self.assertEqual(updated_discount.discount_percentage, 30.00)
+
+    def test_delete_discount(self):
+
+        discount = Discount.objects.create(product=self.product, discount_percentage=20.00)
+
+        discount.delete()
+
+        # noinspection PyTypeChecker
+        with self.assertRaises(Discount.DoesNotExist):
+            Discount.objects.get(product=self.product)
