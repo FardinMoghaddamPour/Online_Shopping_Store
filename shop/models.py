@@ -154,6 +154,9 @@ class Coupon(models.Model):
 
     def save(self, *args, **kwargs):
 
+        if not (1 <= self.amount_of_discount <= 1000000):
+            raise ValidationError("Amount of discount must be between $1 and $1,000,000.")
+
         while not self.coupon_code:
             code = generate_coupon_code()
             try:
