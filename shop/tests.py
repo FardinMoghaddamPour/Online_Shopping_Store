@@ -11,7 +11,8 @@ from .models import (
     OrderItem,
     Coupon,
     Cart,
-    Wishlist
+    Wishlist,
+    WishlistProduct
 )
 from django.core.exceptions import ValidationError
 from django.test import TestCase
@@ -548,3 +549,67 @@ class WishlistTestCase(TestCase):
         # noinspection PyTypeChecker
         with self.assertRaises(Wishlist.DoesNotExist):
             Wishlist.objects.get(id=wishlist.id)
+
+
+class WishlistProductTestCase(TestCase):
+
+    def setUp(self):
+
+        self.seller = CustomUser.objects.create(
+            username='seller',
+            email='seller@example.com',
+            password='Strong_Password_123',
+            phone_number='+989393214333'
+        )
+
+        self.user = CustomUser.objects.create(username='user', email='user@example.com')
+
+        self.category = Category.objects.create(name='Test Category')
+
+        self.inventory = Inventory.objects.create(name='Test Inventory', capacity=100)
+
+        self.product = Product.objects.create(
+            category=self.category,
+            user=self.seller,
+            inventory=self.inventory,
+            name='Test Product',
+            about='Test about',
+            quantity=10,
+            price=50.0,
+            is_active=True,
+            is_deleted=False
+        )
+
+        self.wishlist = Wishlist.objects.create(user=self.user, name='Test Wishlist')
+
+    def test_create_wishlist_product(self):
+
+        wishlist_product = WishlistProduct.objects.create(wishlist=self.wishlist, product=self.product)
+
+        saved_wishlist_product = WishlistProduct.objects.get(id=wishlist_product.id)
+
+        self.assertEqual(saved_wishlist_product.wishlist, self.wishlist)
+        self.assertEqual(saved_wishlist_product.product, self.product)
+
+    def test_delete_wishlist_product(self):
+
+        wishlist_product = WishlistProduct.objects.create(wishlist=self.wishlist, product=self.product)
+
+        wishlist_product.delete()
+
+        # noinspection PyTypeChecker
+        with self.assertRaises(WishlistProduct.DoesNotExist):
+            WishlistProduct.objects.get(id=wishlist_product.id)
+
+    def test_wishlist_product_str_representation(self):
+
+        wishlist_product = WishlistProduct.objects.create(wishlist=self.wishlist, product=self.product)
+
+        self.assertEqual(str(wishlist_product), f'{self.wishlist.user.username} - {self.product.name}')
+
+    def test_wishlist_product_user_relationship(self):
+
+        wishlist_product = WishlistProduct.objects.create(wishlist=self.wishlist, product=self.product)
+        wishlist_product_user = wishlist_product.wishlist.user
+
+        self.assertEqual(wishlist_product_user, self.user)
