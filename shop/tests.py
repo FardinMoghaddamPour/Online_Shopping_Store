@@ -5,7 +5,8 @@ from .models import (
     Product,
     Discount,
     Order,
-    OrderItem
+    OrderItem,
+    Coupon
 )
 from django.core.exceptions import ValidationError
 from django.test import TestCase
@@ -330,3 +331,70 @@ class OrderItemModelTest(TestCase):
 
         with self.assertRaises(ValidationError):
             OrderItem.objects.create(product=self.product, order=self.order, quantity=20)
+
+
+class CouponModelTest(TestCase):
+    def setUp(self):
+
+        self.coupon_data = {
+            'amount_of_discount': 50,
+        }
+
+    def test_create_coupon(self):
+
+        coupon = Coupon.objects.create(**self.coupon_data)
+        self.assertTrue(isinstance(coupon, Coupon))
+
+    def test_coupon_code_generation(self):
+
+        coupon = Coupon.objects.create(**self.coupon_data)
+        self.assertIsNotNone(coupon.coupon_code)
+
+    def test_coupon_amount_range(self):
+
+        coupon_data = {
+            'amount_of_discount': 1000001,
+        }
+        with self.assertRaises(ValidationError):
+            Coupon.objects.create(**coupon_data)
+
+    def test_coupon_rarity_assignment(self):
+
+        rarity_mapping = {
+            5: 'Common',
+            50: 'Uncommon',
+            500: 'Rare',
+            5000: 'Epic',
+            50000: 'Legendary'
+        }
+        for amount, rarity in rarity_mapping.items():
+            coupon_data = {'amount_of_discount': amount}
+
+            coupon = Coupon.objects.create(**coupon_data)
+            self.assertEqual(coupon.rarity, rarity)
+
+    def test_read_coupon(self):
+
+        coupon = Coupon.objects.create(**self.coupon_data)
+        retrieved_coupon = Coupon.objects.get(id=coupon.id)
+        self.assertEqual(coupon, retrieved_coupon)
+
+    def test_update_coupon(self):
+
+        coupon = Coupon.objects.create(**self.coupon_data)
+        new_discount_amount = 75
+        coupon.amount_of_discount = new_discount_amount
+        coupon.save()
+        updated_coupon = Coupon.objects.get(id=coupon.id)
+        self.assertEqual(updated_coupon.amount_of_discount, new_discount_amount)
+
+    def test_delete_coupon(self):
+
+        coupon = Coupon.objects.create(**self.coupon_data)
+        coupon_id = coupon.id
+
+        coupon.delete()
+
+        # noinspection PyTypeChecker
+        with self.assertRaises(Coupon.DoesNotExist):
+            Coupon.objects.get(id=coupon_id)
