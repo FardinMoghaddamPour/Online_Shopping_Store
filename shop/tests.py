@@ -1,4 +1,7 @@
-from account.models import CustomUser
+from account.models import (
+    CustomUser,
+    Address
+)
 from .models import (
     Category,
     Inventory,
@@ -6,7 +9,8 @@ from .models import (
     Discount,
     Order,
     OrderItem,
-    Coupon
+    Coupon,
+    Cart
 )
 from django.core.exceptions import ValidationError
 from django.test import TestCase
@@ -398,3 +402,102 @@ class CouponModelTest(TestCase):
         # noinspection PyTypeChecker
         with self.assertRaises(Coupon.DoesNotExist):
             Coupon.objects.get(id=coupon_id)
+
+
+class CartModelTest(TestCase):
+
+    def setUp(self):
+
+        self.seller_user = CustomUser.objects.create(
+            username='seller',
+            email='seller@example.com',
+            phone_number='+989393214333',
+            password='Strong_123_password'
+        )
+
+        self.buyer_user = CustomUser.objects.create(
+            username='buyer',
+            email='buyer@example.com',
+            phone_number='+989165412191',
+            password='Strong_123_password'
+        )
+
+        self.buyer_address = Address.objects.create(
+            user=self.buyer_user,
+            country='Test Country',
+            city='Test City',
+            address='123 Test St',
+            zipcode='12345',
+            is_active=True
+        )
+
+        self.category = Category.objects.create(name='Test Category')
+        self.inventory = Inventory.objects.create(name='Test Inventory', capacity=100)
+
+        self.coupon = Coupon.objects.create(
+            amount_of_discount=10
+        )
+
+        self.product = Product.objects.create(
+            name='Test Product',
+            price=50,
+            quantity=20,
+            category=self.category,
+            inventory=self.inventory,
+            user=self.seller_user
+        )
+
+        self.order = Order.objects.create(total_price=100)
+        self.order_item = OrderItem.objects.create(product=self.product, order=self.order, quantity=2, price=100)
+
+    def test_create_cart(self):
+
+        cart = Cart.objects.create(
+            custom_user=self.buyer_user,
+            order=self.order,
+            address=self.buyer_address,
+            coupon=self.coupon,
+            quantity=2,
+            total_price=100
+        )
+
+        self.assertTrue(isinstance(cart, Cart))
+
+    def test_calculate_total_price(self):
+
+        cart = Cart.objects.create(
+            custom_user=self.buyer_user,
+            order=self.order,
+            address=self.buyer_address,
+            coupon=self.coupon,
+            quantity=2,
+            total_price=100
+        )
+
+        cart.calculate_total_price()
+
+        self.assertEqual(cart.total_price, 90)
+
+    def test_save_cart_decrease_product_quantity(self):
+
+        initial_quantity = self.product.quantity
+
+        cart = Cart.objects.create(
+            custom_user=self.buyer_user,
+            order=self.order,
+            address=self.buyer_address,
+            coupon=self.coupon,
+            total_price=100,
+            is_active=True
+        )
+
+        cart.save()
+
+        cart.is_active = False
+        cart.save()
+
+        updated_product = Product.objects.get(id=self.product.id)
+
+        self.assertFalse(cart.is_active)
+
+        self.assertEqual(updated_product.quantity, initial_quantity - self.order_item.quantity)
