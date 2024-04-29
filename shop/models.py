@@ -85,7 +85,7 @@ class Discount(models.Model):
         return f"Discount for {self.product.name} - {self.discount_percentage}%"
 
 
-class Order(models.Model):
+class Order(LogicalMixin, models.Model):
     order_date = models.DateTimeField(auto_now_add=True)
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
