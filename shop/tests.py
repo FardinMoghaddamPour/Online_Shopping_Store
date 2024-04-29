@@ -3,7 +3,8 @@ from .models import (
     Category,
     Inventory,
     Product,
-    Discount
+    Discount,
+    Order
 )
 from django.test import TestCase
 from decimal import Decimal
@@ -223,3 +224,42 @@ class DiscountModelTest(TestCase):
         # noinspection PyTypeChecker
         with self.assertRaises(Discount.DoesNotExist):
             Discount.objects.get(product=self.product)
+
+
+class OrderModelTest(TestCase):
+
+    def test_create_order(self):
+
+        order = Order.objects.create(total_price=50.00)
+
+        self.assertIsNotNone(order)
+        self.assertEqual(order.total_price, 50.00)
+
+    def test_read_order(self):
+
+        order = Order.objects.create(total_price=50.00)
+
+        retrieved_order = Order.objects.get(id=order.id)
+
+        self.assertEqual(order, retrieved_order)
+
+    def test_update_order(self):
+
+        order = Order.objects.create(total_price=50.00)
+
+        order.total_price = 60.00
+        order.save()
+
+        updated_order = Order.objects.get(id=order.id)
+
+        self.assertEqual(updated_order.total_price, 60.00)
+
+    def test_delete_order(self):
+
+        order = Order.objects.create(total_price=50.00)
+
+        order.delete()
+
+        # noinspection PyTypeChecker
+        with self.assertRaises(Order.DoesNotExist):
+            Order.objects.get(id=order.id)
