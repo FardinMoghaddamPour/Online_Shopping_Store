@@ -44,6 +44,7 @@ class Product(TimeStampMixin, LogicalMixin, models.Model):
         'Inventory', on_delete=models.CASCADE, related_name='product', null=True, blank=True
     )
     name = models.CharField(max_length=255)
+    image = models.ImageField(upload_to='product_media/', null=False, blank=False, default='product_media/default.png')
     about = models.TextField()
     quantity = models.PositiveIntegerField(default=0)
     price = models.DecimalField(max_digits=10, decimal_places=2)
