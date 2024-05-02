@@ -1,0 +1,12 @@
+{% extends 'layout/_base.html' %}
+{% block content %}
+<div class="mt-8 mb-12 flex items-center justify-center h-[500px]">
+  <div class="max-w-screen-lg mx-auto w-full bg-gray-800 p-8 rounded-lg shadow-md text-center">
+    <h1 class="text-3xl font-bold mb-4 text-white">Authentication <span class="text-green-500">Successful! ✅</span></h1>
+    <p class="text-lg text-white mb-6">
+      Congratulations! Your account has been successfully authenticated. 😍
+    </p>
+      <a href="{% url 'account:signin' %}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-12 rounded">Click here and login</a>
+  </div>
+</div>
+{% endblock %}
