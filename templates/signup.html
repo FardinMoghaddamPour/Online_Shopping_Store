@@ -1,0 +1,65 @@
+{% load tailwind_filters %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Sign up</title>
+    <link rel="stylesheet" href={% static 'CSS/signup.css' %}>
+    <style>
+        @media (min-width: 768px) {
+            .form-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="flex justify-center items-center min-h-screen" style="background: linear-gradient(#141e30, #243b55);">
+        <div
+            style="
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 90%;
+                max-width: 1000px;
+                padding: 40px;
+                transform: translate(-50%, -50%);
+                background: rgba(0, 0, 0, .5);
+                box-sizing: border-box;
+                box-shadow: 0 15px 25px rgba(0, 0, 0, .6);
+                border-radius: 10px;
+            "
+            class="login-box"
+        >
+            <h2 class="text-2xl font-semibold text-white mb-4">Sign up</h2>
+            <form method="post" class="space-y-4 form-grid" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.username|as_crispy_field }}
+                {{ form.password1|as_crispy_field }}
+                {{ form.password2|as_crispy_field }}
+                {{ form.phone_number|as_crispy_field }}
+                {{ form.email|as_crispy_field }}
+                {{ form.first_name|as_crispy_field }}
+                {{ form.last_name|as_crispy_field }}
+                {{ form.age|as_crispy_field }}
+                {{ form.profile_image|as_crispy_field }}
+            <button type="submit">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                Sign up dude 😎
+            </button>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>
