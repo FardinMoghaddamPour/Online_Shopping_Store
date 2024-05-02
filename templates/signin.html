@@ -16,7 +16,7 @@
         {% if messages %}
         <ul class="messages">
             {% for message in messages %}
-                <li>{{ message }}</li>
+            <li>{{ message }}</li>
             {% endfor %}
         </ul>
         {% endif %}
@@ -38,6 +38,42 @@
                 Login
             </button>
         </form>
+        <div>
+            <p style="
+                    color: #fff;
+                ">
+                Don't have an account? Click
+                <span>
+                    <a href="{% url 'account:sign-up' %}" style="
+                        color: #03e9f4;
+                        text-decoration: underline;
+                        font-weight: bold;
+                        font-family: Arial, sans-serif;
+                        font-size: 14px;
+                    ">
+                        here
+                    </a>
+                </span>to create one
+            </p>
+        </div>
+        <div>
+            <p style="
+                    color: #fff;
+                ">
+                Back to
+                <span>
+                    <a href="{% url 'shop:home' %}" style="
+                        color: #03e9f4;
+                        text-decoration: underline;
+                        font-weight: bold;
+                        font-family: Arial, sans-serif;
+                        font-size: 14px;
+                    ">
+                        home
+                    </a>
+                </span>
+            </p>
+        </div>
     </div>
 </body>
 
