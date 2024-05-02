@@ -1,4 +1,6 @@
 from .models import CustomUser
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Field
 from django import forms
 from django.contrib.auth import password_validation
 from django.utils.translation import gettext_lazy as _
@@ -48,3 +50,19 @@ class UserCreationForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+class CustomUserForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ['first_name', 'last_name', 'age', 'profile_image']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Field('first_name', css_class='mt-2'),
+            Field('last_name', css_class='mt-2'),
+            Field('age', css_class='mt-2'),
+            Field('profile_image', css_class='mt-2'),
+        )

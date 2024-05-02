@@ -1,5 +1,8 @@
 from .models import CustomUser
-from .forms import UserCreationForm
+from .forms import (
+    UserCreationForm,
+    CustomUserForm,
+)
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -10,7 +13,8 @@ from django.urls import reverse_lazy
 from django.views.generic import (
     View,
     CreateView,
-    DetailView
+    DetailView,
+    UpdateView,
 )
 
 
@@ -81,3 +85,17 @@ class UserProfileView(LoginRequiredMixin, DetailView):
         is_seller = self.request.user.groups.filter(name='Seller').exists()
         context['is_seller'] = is_seller
         return context
+
+
+class EditProfileView(LoginRequiredMixin, UpdateView):
+
+    model = CustomUser
+    template_name = 'edit_profile.html'
+    fields = ['first_name', 'last_name', 'age', 'profile_image']
+    success_url = reverse_lazy('account:profile')
+
+    def get_form_class(self):
+        return CustomUserForm
+
+    def get_object(self, queryset=None):
+        return self.request.user
