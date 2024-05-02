@@ -2,12 +2,15 @@ from .models import CustomUser
 from .forms import UserCreationForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import AuthenticationForm
+from django.http import Http404
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import (
     View,
-    CreateView
+    CreateView,
+    DetailView
 )
 
 
@@ -56,3 +59,25 @@ class UserCreateView(CreateView):
     form_class = UserCreationForm
     template_name = 'signup.html'
     success_url = reverse_lazy('account:signin')
+
+
+class UserProfileView(LoginRequiredMixin, DetailView):
+
+    model = CustomUser
+    template_name = 'user_profile.html'
+    context_object_name = 'user'
+
+    def get_object(self, queryset=None):
+
+        user = self.request.user
+
+        # noinspection PyUnresolvedReferences
+        if user.is_authenticated and not user.is_deleted:
+            return user
+        raise Http404("You don't have permission to view this profile.")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        is_seller = self.request.user.groups.filter(name='Seller').exists()
+        context['is_seller'] = is_seller
+        return context

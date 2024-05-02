@@ -4,7 +4,7 @@
         <div class="flex flex-row">
             <img class="w-16 cursor-pointer" alt="WebSiteLogo" src={% static 'Images/WebSiteLogo.png' %}>
             {% if user.is_authenticated %}
-            <a href="">
+            <a href="{% url 'account:profile' %}">
                 <img class="w-16 cursor-pointer" alt="UserProfile" src="{{ user.profile_image.url }}">
             </a>
             {% endif %}
