@@ -5,6 +5,8 @@ from .views import (
     UserCreateView,
     UserProfileView,
     EditProfileView,
+    AuthUserView,
+    SuccessAuthenticationView,
 )
 
 
@@ -17,4 +19,6 @@ urlpatterns = [
     path('sign-up', UserCreateView.as_view(), name='sign-up'),
     path('profile/', UserProfileView.as_view(), name='profile'),
     path('profile/edit/', EditProfileView.as_view(), name='edit-profile'),
+    path('authenticate/', AuthUserView.as_view(), name='authenticate'),
+    path('success-authentication/', SuccessAuthenticationView.as_view(), name='success-authentication'),
 ]
