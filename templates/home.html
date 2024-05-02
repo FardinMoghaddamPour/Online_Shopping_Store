@@ -2,6 +2,19 @@
 
 {% block content %}
 <div class="container mx-auto py-8">
+    {#Display message#}
+    {% if messages %}
+    <div id="message-block" class="w-full h-20 bg-opacity-90 z-50">
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{% if message.tags == 'success' %}text-green-500{% elif message.tags == 'warning' %}text-yellow-500{% elif message.tags == 'error' %}text-red-500{% endif %} text-center h-full py-2">
+                    {{ message }}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
         {% for product in products %}
         <div class="border p-4">

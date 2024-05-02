@@ -24,12 +24,12 @@ class SignInView(View):
 
         user = authenticate(request, phone_number=phone_number, password=password)
         if user is not None:
-            if user.is_active:
+            if not user.is_deleted:
                 user.is_logged_in = True
                 user.save()
 
                 login(request, user)
-                messages.success(request, 'Logged in successfully!')
+                request.session['success_message'] = 'Logged in successfully!'
                 return redirect(reverse_lazy('shop:home'))
             else:
                 messages.error(request, 'Your account is disabled.')

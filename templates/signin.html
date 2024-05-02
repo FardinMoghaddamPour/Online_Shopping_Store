@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <title>Sign in</title>
     <link rel="stylesheet" href={% static 'CSS/signin.css' %}>
-
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body>
@@ -16,7 +16,13 @@
         {% if messages %}
         <ul class="messages">
             {% for message in messages %}
-            <li>{{ message }}</li>
+            <li
+                class="
+                    {% if message.tags == 'warning' %}text-yellow-500
+                    {% elif message.tags == 'error' %}text-red-500
+                    {% endif %}">
+                {{ message }}
+            </li>
             {% endfor %}
         </ul>
         {% endif %}
