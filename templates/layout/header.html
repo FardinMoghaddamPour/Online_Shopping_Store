@@ -1,8 +1,13 @@
 {% load static %}
 <header class="bg-white">
     <nav class="flex justify-between items-center w-[92%]  mx-auto">
-        <div>
+        <div class="flex flex-row">
             <img class="w-16 cursor-pointer" alt="WebSiteLogo" src={% static 'Images/WebSiteLogo.png' %}>
+            {% if user.is_authenticated %}
+            <a href="">
+                <img class="w-16 cursor-pointer" alt="UserProfile" src="{{ user.profile_image.url }}">
+            </a>
+            {% endif %}
         </div>
         <div
             class="nav-links duration-500 md:static absolute bg-white md:min-h-fit min-h-[60vh] left-0 top-[-100%] md:w-auto  w-full flex items-center px-5">
@@ -25,7 +30,15 @@
             </ul>
         </div>
         <div class="flex items-center gap-6">
-            <button class="bg-[#a6c1ee] text-white px-5 py-2 rounded-full hover:bg-[#87acec]">Sign in</button>
+            {% if user.is_authenticated %}
+            <button class="bg-[#a6c1ee] text-white px-5 py-2 rounded-full hover:bg-[#87acec]">
+                <a>Log out</a>
+            </button>
+            {% else %}
+            <button class="bg-[#a6c1ee] text-white px-5 py-2 rounded-full hover:bg-[#87acec]">
+                <a href="{% url 'account:signin' %}">Sign in</a>
+            </button>
+            {% endif %}
             <ion-icon onclick="onToggleMenu(this)" name="menu" class="text-3xl cursor-pointer md:hidden"></ion-icon>
         </div>
     </nav>
