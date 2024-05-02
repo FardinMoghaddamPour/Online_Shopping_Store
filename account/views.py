@@ -1,9 +1,14 @@
+from .models import CustomUser
+from .forms import UserCreationForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.views.generic import View
+from django.views.generic import (
+    View,
+    CreateView
+)
 
 
 class SignInView(View):
@@ -43,3 +48,11 @@ class LogOutView(View):
         request.user.save(update_fields=['is_logged_in'])
         logout(request)
         return redirect('shop:home')
+
+
+class UserCreateView(CreateView):
+
+    model = CustomUser
+    form_class = UserCreationForm
+    template_name = 'signup.html'
+    success_url = reverse_lazy('account:signin')
