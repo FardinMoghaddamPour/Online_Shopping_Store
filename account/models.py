@@ -28,7 +28,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, TimeStampMixin, LogicalMixi
     username = models.CharField(max_length=255, unique=True, validators=[username_validator])
     password = models.CharField(max_length=255, validators=[password_validator])
     phone_number = models.CharField(max_length=17, unique=True, validators=[phone_number_validator])
-    email = models.EmailField(blank=True, null=True)
+    email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=255, blank=True, null=True)
     last_name = models.CharField(max_length=255, blank=True, null=True)
     age = models.IntegerField(blank=True, null=True)
