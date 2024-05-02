@@ -18,8 +18,9 @@
             {% for message in messages %}
             <li
                 class="
-                    {% if message.tags == 'warning' %}text-yellow-500
-                    {% elif message.tags == 'error' %}text-red-500
+                    {% if message.tags == 'warning' %}text-yellow-500 mb-4
+                    {% elif message.tags == 'error' %}text-red-500 mb-4
+                    {% elif message.tags == 'success' %}text-green-500 mb-4
                     {% endif %}">
                 {{ message }}
             </li>
