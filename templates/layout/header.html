@@ -31,9 +31,15 @@
         </div>
         <div class="flex items-center gap-6">
             {% if user.is_authenticated %}
-            <button class="bg-[#a6c1ee] text-white px-5 py-2 rounded-full hover:bg-[#87acec]">
-                <a>Log out</a>
-            </button>
+            <form action="{% url 'account:logout' %}" method="post">
+                {% csrf_token %}
+                <button
+                        type="submit"
+                        class="bg-[#a6c1ee] text-white px-5 py-2 rounded-full hover:bg-[#87acec]"
+                >
+                    Log out
+                </button>
+            </form>
             {% else %}
             <button class="bg-[#a6c1ee] text-white px-5 py-2 rounded-full hover:bg-[#87acec]">
                 <a href="{% url 'account:signin' %}">Sign in</a>

@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -33,3 +33,13 @@ class SignInView(View):
 
         form = AuthenticationForm(request.POST)
         return render(request, self.template_name, {'form': form})
+
+
+class LogOutView(View):
+
+    @staticmethod
+    def post(request):
+        request.user.is_logged_in = False
+        request.user.save(update_fields=['is_logged_in'])
+        logout(request)
+        return redirect('shop:home')
