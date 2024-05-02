@@ -33,6 +33,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, TimeStampMixin, LogicalMixi
     last_name = models.CharField(max_length=255, blank=True, null=True)
     age = models.IntegerField(blank=True, null=True)
     is_logged_in = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
     profile_image = models.ImageField(
         upload_to='profile_images/',
         blank=True,
