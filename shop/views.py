@@ -1,7 +1,11 @@
 from django.contrib import messages
 from django.shortcuts import render
-from django.views.generic import View
-from .models import Product
+from django.views.generic import (
+    View,
+    ListView,
+    DetailView,
+)
+from .models import Product, Category
 
 
 class ProductListView(View):
@@ -14,3 +18,10 @@ class ProductListView(View):
 
         products = Product.objects.filter(is_active=True)
         return render(request, 'home.html', {'products': products})
+
+
+class ReadCategoryView(ListView):
+
+    model = Category
+    context_object_name = 'categories'
+    template_name = 'category_list.html'
