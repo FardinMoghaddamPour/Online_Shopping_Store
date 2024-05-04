@@ -20,8 +20,10 @@ class ProductListView(View):
         return render(request, 'home.html', {'products': products})
 
 
-class ReadCategoryView(ListView):
-
+class CategoryListView(ListView):
     model = Category
-    context_object_name = 'categories'
     template_name = 'category_list.html'
+    context_object_name = 'categories'
+
+    def get_queryset(self):
+        return Category.objects.filter(parent_category__isnull=True)
