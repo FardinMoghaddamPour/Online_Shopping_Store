@@ -3,6 +3,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field
 from django import forms
 from django.contrib.auth import password_validation
+from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 
@@ -34,6 +35,15 @@ class UserCreationForm(forms.ModelForm):
             'age',
             'profile_image'
         ]
+
+    def clean_password1(self):
+        password1 = self.cleaned_data.get('password1')
+        user = self.instance
+        try:
+            password_validation.validate_password(password1, user)
+        except ValidationError as e:
+            self.add_error('password1', e)
+        return password1
 
     def clean_password2(self):
         password1 = self.cleaned_data.get('password1')
