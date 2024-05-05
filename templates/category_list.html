@@ -14,7 +14,14 @@
                         border: 1px solid rgba(255, 255, 255, 0.1);
                         "
             >
-                <p class="font-semibold">{{ category.name }}</p>
+                <p class="font-semibold">
+                    <a
+                        href="{% url 'shop:category_products' category.id %}"
+                        class="text-blue-500 hover:text-blue-700"
+                    >
+                        {{ category.name }}
+                    </a>
+                </p>
                 {{ category|show_subcategories }}
             </div>
         {% endfor %}

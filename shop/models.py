@@ -20,6 +20,16 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+    def get_descendants(self, include_self=False):
+        """
+        Recursively fetch all descendants of the current category.
+        If include_self is True, the category itself is included in the result.
+        """
+        categories = [self] if include_self else []
+        for subcategory in self.subcategories.all():
+            categories.extend(subcategory.get_descendants(include_self=True))
+        return categories
+
 
 class Inventory(models.Model):
     name = models.CharField(max_length=255)

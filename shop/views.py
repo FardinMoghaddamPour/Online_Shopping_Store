@@ -3,7 +3,6 @@ from django.shortcuts import render
 from django.views.generic import (
     View,
     ListView,
-    DetailView,
 )
 from .models import Product, Category
 
@@ -27,3 +26,17 @@ class CategoryListView(ListView):
 
     def get_queryset(self):
         return Category.objects.filter(parent_category__isnull=True)
+
+
+class ProductInCategoryListView(ListView):
+
+    model = Product
+    template_name = 'product_list.html'
+    context_object_name = 'products'
+
+    def get_queryset(self):
+
+        category_id = self.kwargs['category_id']
+        category = Category.objects.get(id=category_id)
+        descendant_categories = category.get_descendants(include_self=True)
+        return Product.objects.filter(category__in=descendant_categories).distinct()
