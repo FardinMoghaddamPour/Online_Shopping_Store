@@ -1,8 +1,9 @@
 from .models import CustomUser
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field
+from crispy_forms.layout import Layout, Submit, Field
 from django import forms
 from django.contrib.auth import password_validation
+from django.contrib.auth.forms import PasswordChangeForm
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
@@ -76,3 +77,48 @@ class CustomUserForm(forms.ModelForm):
             Field('age', css_class='mt-2'),
             Field('profile_image', css_class='mt-2'),
         )
+
+
+class CustomPasswordChangeForm(PasswordChangeForm):
+    old_password = forms.CharField(
+        label="Old Password",
+        strip=False,
+        widget=forms.PasswordInput(attrs={'autocomplete': 'current-password', 'autofocus': True})
+    )
+    new_password1 = forms.CharField(
+        label="New Password",
+        widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
+        strip=False,
+        help_text=password_validation.password_validators_help_text_html(),
+    )
+    new_password2 = forms.CharField(
+        label="Confirm New Password",
+        strip=False,
+        widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(CustomPasswordChangeForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.layout = Layout(
+            Field('old_password', css_class='mb-3'),
+            Field('new_password1', css_class='mb-3'),
+            Field('new_password2', css_class='mb-3'),
+            Submit(
+                'submit',
+                'Change Password',
+                css_class=(
+                    'mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold '
+                    'py-2 px-4 rounded'
+                )
+            )
+        )
+
+    def clean_new_password2(self):
+        password1 = self.cleaned_data.get('new_password1')
+        password2 = self.cleaned_data.get('new_password2')
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError("The two password fields didn't match.")
+        password_validation.validate_password(password2, self.user)
+        return password2

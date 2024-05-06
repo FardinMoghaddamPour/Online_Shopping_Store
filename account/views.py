@@ -2,11 +2,14 @@ from .models import CustomUser
 from .forms import (
     UserCreationForm,
     CustomUserForm,
+    CustomPasswordChangeForm
 )
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import PasswordChangeView
+from django.contrib.messages.views import SuccessMessageMixin
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -139,3 +142,10 @@ class AuthUserView(View):
 
 class SuccessAuthenticationView(TemplateView):
     template_name = 'success_authentication.html'
+
+
+class CustomPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
+    form_class = CustomPasswordChangeForm
+    success_url = reverse_lazy('account:edit-profile')
+    template_name = 'change_password.html'
+    success_message = "Your password was successfully updated!"

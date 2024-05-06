@@ -7,6 +7,7 @@ from .views import (
     EditProfileView,
     AuthUserView,
     SuccessAuthenticationView,
+    CustomPasswordChangeView,
 )
 
 
@@ -21,4 +22,5 @@ urlpatterns = [
     path('profile/edit/', EditProfileView.as_view(), name='edit-profile'),
     path('authenticate/', AuthUserView.as_view(), name='authenticate'),
     path('success-authentication/', SuccessAuthenticationView.as_view(), name='success-authentication'),
+    path('change-password/', CustomPasswordChangeView.as_view(), name='change-password'),
 ]
