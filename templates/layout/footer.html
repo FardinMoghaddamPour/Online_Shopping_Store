@@ -3,8 +3,27 @@
     <div class="container mx-auto py-14 px-6">
         <div class="grid md:grid-cols-12 grid-cols-1 gap-7">
             <div class="lg:col-span-4 col-span-12">
-                <a href="">
-                    <img class="h-12" alt="WebSiteLogo" src={% static 'Images/WebSiteLogo.png' %}>
+                <a
+                    href=""
+                    style="
+                     display: block;
+                     width: 65px;
+                     height: 65px;
+                     border-radius: 50%;
+                     overflow: hidden;
+                     "
+                >
+                    <img
+                        class="h-12"
+                        alt="WebSiteLogo"
+                        style="
+                            display: block;
+                            width: 100%;
+                            height: 100%;
+                            object-fit: cover;
+                            "
+                        src={% static 'Images/Website-Logo.png' %}
+                    >
                 </a>
                 <p class="mt-6">
                     This website is inspired by Amazon and Digikala. It is an online shopping store.
