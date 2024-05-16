@@ -14,7 +14,6 @@ from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from utils.verification_code_generator import generate_verification_code
-from utils.send_email_to_user import send_verification_code
 from django.views.generic import (
     View,
     CreateView,
@@ -22,6 +21,7 @@ from django.views.generic import (
     UpdateView,
     TemplateView,
 )
+from .tasks import send_verification_code_to_user
 
 
 class SignInView(View):
@@ -118,7 +118,8 @@ class AuthUserView(View):
         if 'email' in request.POST:
             user_email = request.POST.get('email')
             verification_code = generate_verification_code()
-            send_verification_code(user_email, verification_code)
+            print(f"Sending task to send email to {user_email}")
+            send_verification_code_to_user.apply_async(args=[user_email, verification_code])
             request.session['user_email'] = user_email
             request.session['verification_code'] = verification_code
             return render(request, self.template_name, {'show_verification_code_input': True})
