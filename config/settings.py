@@ -120,3 +120,13 @@ if DEBUG:
     EMAIL_HOST_USER = 'django.social.media.project@gmail.com'
     EMAIL_HOST_PASSWORD = 'rwxnrgcrxcuxfnxi'
     DEFAULT_FROM_EMAIL = 'django.social.media.project@gmail.com'
+
+# Celery Settings
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_BROKER_BACKEND = "redis://localhost:6379/1"
+CELERY_RESULT_BACKEND = "redis://localhost:6379/2"
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Tehran'
