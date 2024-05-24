@@ -24,8 +24,8 @@ class LogicalManager(models.Manager):
         return self.__queryset
 
     def get_queryset(self):
-        return super().get_queryset().filter(is_deleted=False)
+        return self.get_queryset_object().filter(is_deleted=False)
 
     @property
     def archived(self):
-        return super().get_queryset()
+        return self.get_queryset_object()
