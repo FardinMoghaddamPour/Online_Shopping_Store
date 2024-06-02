@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     "core",
     'crispy_forms',
     "crispy_tailwind",
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

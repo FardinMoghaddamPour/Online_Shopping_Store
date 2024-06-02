@@ -8,27 +8,64 @@ from utils.coupon_generator import generate_coupon_code
 
 
 class Category(models.Model):
+
     name = models.CharField(max_length=255, unique=True)
     parent_category = models.ForeignKey(
         'self', on_delete=models.CASCADE, null=True, blank=True, related_name='subcategories'
     )
 
     class Meta:
+
         verbose_name = 'Category'
         verbose_name_plural = 'Categories'
 
     def __str__(self):
+
         return self.name
 
-    def get_descendants(self, include_self=False):
+    @staticmethod
+    def calculate_max_depth(root_category):
+
         """
-        Recursively fetch all descendants of the current category.
-        If include_self is True, the category itself is included in the result.
+        Recursively calculates the maximum depth of the category tree starting from a given root category.
         """
-        categories = [self] if include_self else []
-        for subcategory in self.subcategories.all():
-            categories.extend(subcategory.get_descendants(include_self=True))
-        return categories
+
+        if not root_category.subcategories.exists():
+            return 0
+        else:
+            return 1 + max(Category.calculate_max_depth(sub) for sub in root_category.subcategories.all())
+
+    def get_descendants(self, include_self=False, levels=None):
+
+        """
+        Fetch all descendants of the current category using dynamically determined levels of prefetching.
+        If 'levels' is not provided, calculate it based on the maximum depth of the category tree.
+        """
+
+        if levels is None:
+            levels = Category.calculate_max_depth(self)
+
+        result = [self] if include_self else []
+        queryset = Category.objects.all()
+
+        for _ in range(levels):
+
+            queryset = queryset.prefetch_related('subcategories')
+
+        categories = queryset.filter(id=self.id)
+
+        # noinspection PyShadowingNames
+        def collect_categories(category, current_level):
+
+            if current_level > 0:
+                for subcategory in category.subcategories.all():
+                    result.append(subcategory)
+                    collect_categories(subcategory, current_level - 1)
+
+        for category in categories:
+            collect_categories(category, levels)
+
+        return result
 
 
 class Inventory(models.Model):
