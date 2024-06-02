@@ -17,8 +17,8 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
         {% for product in products %}
-        <div class="border p-4">
-            <div class="flex justify-center items-center" style="width: 400px; height: 400px;">
+        <div class="border p-8">
+            <div class="flex justify-center items-center m-4" style="width: 400px; height: 400px;">
                 <img src="{{ product.image.url }}" alt="{{ product.name }}" class="object-cover">
             </div>
             <div class="mt-4">
