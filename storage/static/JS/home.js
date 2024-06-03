@@ -15,5 +15,53 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function addProductToCart(productId) {
-    console.log('Add product to cart:', productId);
+    fetch('/api/add-to-cart/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+        body: JSON.stringify({ product_id: productId }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data.message);
+        updateCartCount();
+        fetchAndDisplayMessages();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function updateCartCount() {
+    fetch('/api/get-cart-count/', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        const cartCountElement = document.getElementById('cart-count');
+        cartCountElement.textContent = data.cart_count;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 }
