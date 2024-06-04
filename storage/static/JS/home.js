@@ -27,7 +27,6 @@ function addProductToCart(productId) {
     .then(data => {
         console.log(data.message);
         updateCartCount();
-        fetchAndDisplayMessages();
     })
     .catch(error => {
         console.error('Error:', error);
@@ -59,6 +58,7 @@ function updateCartCount() {
     .then(response => response.json())
     .then(data => {
         const cartCountElement = document.getElementById('cart-count');
+        // noinspection JSUnresolvedReference
         cartCountElement.textContent = data.cart_count;
     })
     .catch(error => {
