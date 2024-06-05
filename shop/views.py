@@ -77,3 +77,36 @@ class AddToCartView(APIView):
         request.session['cart'] = cart
         request.session.modified = True
         return Response({'message': 'Product added to cart'}, status=status.HTTP_200_OK)
+
+
+class CartView(View):
+    @staticmethod
+    def get(request):
+        return render(request, 'cart.html')
+
+
+class CartAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @staticmethod
+    def get(request):
+        cart = request.session.get('cart', {})
+        cart_items = []
+
+        for product_id, item in cart.items():
+            product = Product.objects.get(id=product_id)
+            cart_items.append({
+                'id': product.id,
+                'name': product.name,
+                'description': product.about,
+                'price': item['price'],
+                'quantity': item['quantity']
+            })
+
+        response_data = {
+            'cart_items': cart_items,
+            'cart_count': sum(item['quantity'] for item in cart_items),
+            'total_price': sum(float(item['price']) * item['quantity'] for item in cart_items)
+        }
+
+        return Response(response_data)
