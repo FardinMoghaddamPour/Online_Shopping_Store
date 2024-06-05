@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 renderCartItems(data.cart_items);
                 // noinspection JSUnresolvedReference
                 updateTotalPrice(data.total_price);
+                // noinspection JSUnresolvedReference
+                toggleCheckoutButton(data.cart_items.length > 0);
             })
             .catch(error => console.error('Error fetching cart items:', error));
     }
@@ -20,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
         cartItems.forEach(item => {
             const cartItem = document.createElement('div');
             cartItem.classList.add('cart-item');
-            cartItem.dataset.productId = item.id;  // Add product ID to the element for easy access
+            cartItem.dataset.productId = item.id;
             // noinspection JSUnresolvedReference
             cartItem.innerHTML = `
                 <div class="cart-item-details">
@@ -60,11 +62,11 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: JSON.stringify({ product_id: productId, quantity: quantity }),
         })
-        .then(response => response.json())
-        .then(data => {
-            fetchCartItems();
-        })
-        .catch(error => console.error('Error updating cart:', error));
+            .then(response => response.json())
+            .then(data => {
+                fetchCartItems();
+            })
+            .catch(error => console.error('Error updating cart:', error));
     }
 
     function removeItem(productId) {
@@ -77,16 +79,25 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: JSON.stringify({ product_id: productId }),
         })
-        .then(response => response.json())
-        .then(data => {
-            fetchCartItems();
-        })
-        .catch(error => console.error('Error removing item from cart:', error));
+            .then(response => response.json())
+            .then(data => {
+                fetchCartItems();
+            })
+            .catch(error => console.error('Error removing item from cart:', error));
     }
 
     function updateTotalPrice(totalPrice) {
         const totalPriceElement = document.getElementById('total-price');
         totalPriceElement.textContent = `$${totalPrice.toFixed(2)}`;
+    }
+
+    function toggleCheckoutButton(show) {
+        const checkoutButton = document.getElementById('checkout-button');
+        if (show) {
+            checkoutButton.style.visibility = 'visible';
+        } else {
+            checkoutButton.style.visibility = 'hidden';
+        }
     }
 
     // noinspection DuplicatedCode
