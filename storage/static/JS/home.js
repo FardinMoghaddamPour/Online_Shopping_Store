@@ -33,6 +33,7 @@ function addProductToCart(productId) {
     });
 }
 
+// noinspection DuplicatedCode
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
