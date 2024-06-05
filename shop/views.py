@@ -110,3 +110,44 @@ class CartAPIView(APIView):
         }
 
         return Response(response_data)
+
+
+class UpdateCartAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @staticmethod
+    def post(request):
+        product_id = str(request.data.get('product_id'))
+        quantity = request.data.get('quantity')
+        product = get_object_or_404(Product, id=product_id)
+
+        cart = request.session.get('cart', {})
+
+        if quantity < 1:
+            cart.pop(product_id, None)
+        else:
+            if product_id in cart:
+                cart[product_id]['quantity'] = quantity
+            else:
+                cart[product_id] = {'quantity': quantity, 'price': str(product.price)}
+
+        request.session['cart'] = cart
+        request.session.modified = True
+
+        return Response({'message': 'Cart updated successfully'})
+
+
+class RemoveFromCartAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @staticmethod
+    def post(request):
+        product_id = str(request.data.get('product_id'))
+
+        cart = request.session.get('cart', {})
+        cart.pop(product_id, None)
+
+        request.session['cart'] = cart
+        request.session.modified = True
+
+        return Response({'message': 'Item removed from cart successfully'})

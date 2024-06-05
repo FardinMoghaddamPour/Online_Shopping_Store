@@ -5,7 +5,9 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch('/api/cart/')
             .then(response => response.json())
             .then(data => {
+                // noinspection JSUnresolvedReference
                 renderCartItems(data.cart_items);
+                // noinspection JSUnresolvedReference
                 updateTotalPrice(data.total_price);
             })
             .catch(error => console.error('Error fetching cart items:', error));
@@ -18,6 +20,8 @@ document.addEventListener('DOMContentLoaded', function () {
         cartItems.forEach(item => {
             const cartItem = document.createElement('div');
             cartItem.classList.add('cart-item');
+            cartItem.dataset.productId = item.id;  // Add product ID to the element for easy access
+            // noinspection JSUnresolvedReference
             cartItem.innerHTML = `
                 <div class="cart-item-details">
                     <h2 class="text-lg font-semibold">${item.name}</h2>
@@ -26,19 +30,78 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div class="cart-item-actions">
                     <span class="text-lg font-semibold">$${item.price}</span>
                     <div class="quantity-selector">
-                        <button type="button">-</button>
-                        <input type="number" value="${item.quantity}" readonly>
-                        <button type="button">+</button>
+                        <button type="button" class="decrement" data-product-id="${item.id}">-</button>
+                        <input type="number" id="quantity-${item.id}" name="quantity-${item.id}" value="${item.quantity}" readonly>
+                        <button type="button" class="increment" data-product-id="${item.id}">+</button>
                     </div>
-                    <button class="bg-red-500 text-white px-4 py-2 rounded-lg">Remove</button>
+                    <button class="bg-red-500 text-white px-4 py-2 rounded-lg remove" data-product-id="${item.id}">Remove</button>
                 </div>
             `;
             cartItemsContainer.appendChild(cartItem);
+
+            cartItem.querySelector('.increment').addEventListener('click', () => updateQuantity(item.id, item.quantity + 1));
+            cartItem.querySelector('.decrement').addEventListener('click', () => updateQuantity(item.id, item.quantity - 1));
+            cartItem.querySelector('.remove').addEventListener('click', () => removeItem(item.id));
         });
+    }
+
+    function updateQuantity(productId, quantity) {
+        if (quantity < 1) {
+            removeItem(productId);
+            return;
+        }
+
+        // noinspection JSUnusedLocalSymbols
+        fetch('/api/update-cart/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: JSON.stringify({ product_id: productId, quantity: quantity }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            fetchCartItems();
+        })
+        .catch(error => console.error('Error updating cart:', error));
+    }
+
+    function removeItem(productId) {
+        // noinspection JSUnusedLocalSymbols
+        fetch('/api/remove-from-cart/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: JSON.stringify({ product_id: productId }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            fetchCartItems();
+        })
+        .catch(error => console.error('Error removing item from cart:', error));
     }
 
     function updateTotalPrice(totalPrice) {
         const totalPriceElement = document.getElementById('total-price');
         totalPriceElement.textContent = `$${totalPrice.toFixed(2)}`;
+    }
+
+    // noinspection DuplicatedCode
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
     }
 });
