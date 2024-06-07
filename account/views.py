@@ -21,6 +21,8 @@ from django.views.generic import (
     UpdateView,
     TemplateView,
 )
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from .tasks import send_verification_code_to_user
 import json
 
@@ -46,6 +48,7 @@ class SignInView(View):
                 login(request, user)
                 request.session['success_message'] = 'Logged in successfully!'
                 self.merge_carts(request, local_cart)
+                request.session['logged_in'] = True
                 return redirect(reverse_lazy('shop:home'))
             else:
                 messages.error(request, 'Your account is disabled.')
@@ -67,6 +70,13 @@ class SignInView(View):
 
         request.session['cart'] = session_cart
         request.session.modified = True
+
+
+class CheckLoginStatusAPIView(APIView):
+    @staticmethod
+    def get(request):
+        logged_in = request.session.pop('logged_in', False)
+        return Response({'logged_in': logged_in})
 
 
 class LogOutView(View):

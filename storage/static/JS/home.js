@@ -24,6 +24,15 @@ document.addEventListener('DOMContentLoaded', function () {
             updateCartCountOnLoad();
         }
     });
+    
+    fetch('/api/check-login-status/')
+        .then(response => response.json())
+        .then(data => {
+            if (data.logged_in) {
+                localStorage.removeItem('cart');
+            }
+        })
+        .catch(error => console.error('Error checking login status:', error));
 });
 
 function addToLocalStorageCart(productId, productName, productPrice) {
