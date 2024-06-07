@@ -17,7 +17,13 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    updateLocalStorageCartCount();
+    updateCartCountOnLoad();
+
+    document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'visible') {
+            updateCartCountOnLoad();
+        }
+    });
 });
 
 function addToLocalStorageCart(productId, productName, productPrice) {
@@ -78,6 +84,14 @@ function updateCartCount() {
     .catch(error => {
         console.error('Error:', error);
     });
+}
+
+function updateCartCountOnLoad() {
+    if (isUserAuthenticated) {
+        updateCartCount();
+    } else {
+        updateLocalStorageCartCount();
+    }
 }
 
 // noinspection DuplicatedCode

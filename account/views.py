@@ -71,11 +71,17 @@ class SignInView(View):
 
 class LogOutView(View):
 
-    @staticmethod
-    def post(request):
-        request.user.is_logged_in = False
-        request.user.save(update_fields=['is_logged_in'])
-        logout(request)
+    def post(self, request):
+        cart_data = self.request.session.get('cart', {})
+
+        self.request.user.is_logged_in = False
+        self.request.user.save(update_fields=['is_logged_in'])
+
+        logout(self.request)
+
+        self.request.session['cart'] = cart_data
+        self.request.session.modified = True
+
         return redirect('shop:home')
 
 
