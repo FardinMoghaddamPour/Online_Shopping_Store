@@ -1,18 +1,48 @@
+// noinspection JSUnresolvedReference,UnnecessaryLocalVariableJS
+
 document.addEventListener('DOMContentLoaded', function () {
     const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
 
     addToCartButtons.forEach(function (button) {
         button.addEventListener('click', function () {
             const productId = this.getAttribute('data-product-id');
+            const productName = this.getAttribute('data-product-name');
+            const productPrice = this.getAttribute('data-product-price');
 
             if (!isUserAuthenticated) {
-                window.location.href = '/sign-in/';
+                addToLocalStorageCart(productId, productName, productPrice);
             } else {
                 addProductToCart(productId);
             }
         });
     });
+
+    updateLocalStorageCartCount();
 });
+
+function addToLocalStorageCart(productId, productName, productPrice) {
+    let cart = JSON.parse(localStorage.getItem('cart')) || {};
+
+    if (cart[productId]) {
+        cart[productId].quantity += 1;
+    } else {
+        cart[productId] = {
+            name: productName,
+            price: productPrice,
+            quantity: 1
+        };
+    }
+
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateLocalStorageCartCount();
+}
+
+function updateLocalStorageCartCount() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || {};
+    const cartCount = Object.values(cart).reduce((acc, item) => acc + item.quantity, 0);
+    // noinspection JSValidateTypes
+    document.getElementById('cart-count').textContent = cartCount;
+}
 
 function addProductToCart(productId) {
     fetch('/api/add-to-cart/', {
@@ -33,6 +63,23 @@ function addProductToCart(productId) {
     });
 }
 
+function updateCartCount() {
+    fetch('/api/get-cart-count/', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        const cartCountElement = document.getElementById('cart-count');
+        cartCountElement.textContent = data.cart_count;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
 // noinspection DuplicatedCode
 function getCookie(name) {
     let cookieValue = null;
@@ -47,22 +94,4 @@ function getCookie(name) {
         }
     }
     return cookieValue;
-}
-
-function updateCartCount() {
-    fetch('/api/get-cart-count/', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    })
-    .then(response => response.json())
-    .then(data => {
-        const cartCountElement = document.getElementById('cart-count');
-        // noinspection JSUnresolvedReference
-        cartCountElement.textContent = data.cart_count;
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
 }

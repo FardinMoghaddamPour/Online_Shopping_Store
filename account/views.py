@@ -22,6 +22,7 @@ from django.views.generic import (
     TemplateView,
 )
 from .tasks import send_verification_code_to_user
+import json
 
 
 class SignInView(View):
@@ -34,6 +35,7 @@ class SignInView(View):
     def post(self, request):
         phone_number = request.POST.get('phone_number')
         password = request.POST.get('password')
+        local_cart = json.loads(request.POST.get('local_cart', '{}'))
 
         user = authenticate(request, phone_number=phone_number, password=password)
         if user is not None:
@@ -43,6 +45,7 @@ class SignInView(View):
 
                 login(request, user)
                 request.session['success_message'] = 'Logged in successfully!'
+                self.merge_carts(request, local_cart)
                 return redirect(reverse_lazy('shop:home'))
             else:
                 messages.error(request, 'Your account is disabled.')
@@ -51,6 +54,19 @@ class SignInView(View):
 
         form = AuthenticationForm(request.POST)
         return render(request, self.template_name, {'form': form})
+
+    @staticmethod
+    def merge_carts(request, local_cart):
+        session_cart = request.session.get('cart', {})
+
+        for product_id, item in local_cart.items():
+            if product_id in session_cart:
+                session_cart[product_id]['quantity'] += item['quantity']
+            else:
+                session_cart[product_id] = item
+
+        request.session['cart'] = session_cart
+        request.session.modified = True
 
 
 class LogOutView(View):
