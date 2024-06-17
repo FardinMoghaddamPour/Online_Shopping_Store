@@ -5,7 +5,8 @@ from .models import (
 from .forms import (
     UserCreationForm,
     CustomUserForm,
-    CustomPasswordChangeForm
+    CustomPasswordChangeForm,
+    AddressForm,
 )
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -189,10 +190,11 @@ class CustomPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
 
 class CreateAddressView(CreateView):
     model = Address
-    fields = ['country', 'city', 'address', 'zipcode']
+    form_class = AddressForm
     template_name = 'create_address.html'
     success_url = reverse_lazy('account:profile')
 
     def form_valid(self, form):
         form.instance.user = self.request.user
+        form.instance.is_active = False
         return super().form_valid(form)

@@ -1,4 +1,7 @@
-from .models import CustomUser
+from .models import (
+    CustomUser,
+    Address,
+)
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Field
 from django import forms
@@ -122,3 +125,24 @@ class CustomPasswordChangeForm(PasswordChangeForm):
             raise forms.ValidationError("The two password fields didn't match.")
         password_validation.validate_password(password2, self.user)
         return password2
+
+
+class AddressForm(forms.ModelForm):
+    class Meta:
+        model = Address
+        fields = ['country', 'city', 'address', 'zipcode']  # 'is_active' is excluded
+
+    def __init__(self, *args, **kwargs):
+        super(AddressForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.layout = Layout(
+            Field('country', css_class='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 '
+                                       'leading-tight focus:outline-none focus:shadow-outline'),
+            Field('city', css_class='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 '
+                                    'leading-tight focus:outline-none focus:shadow-outline'),
+            Field('address', css_class='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 '
+                                       'leading-tight focus:outline-none focus:shadow-outline'),
+            Field('zipcode', css_class='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 '
+                                       'leading-tight focus:outline-none focus:shadow-outline'),
+        )

@@ -1,11 +1,19 @@
 {% extends 'layout/_base.html' %}
+{% load crispy_forms_filters %}
+
+{% load crispy_forms_tags %}
 
 {% block content %}
-<div class="mt-8 mb-12">
+<div class="mt-8 mb-12 bg-white bg-opacity-50 backdrop-filter backdrop-blur-lg p-6 rounded-lg shadow-lg">
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Save Address</button>
+        {{ form|crispy }}
+        <button
+            type="submit"
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+            Save Address
+        </button>
     </form>
 </div>
 {% endblock %}
