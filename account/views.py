@@ -1,4 +1,7 @@
-from .models import CustomUser
+from .models import (
+    CustomUser,
+    Address,
+)
 from .forms import (
     UserCreationForm,
     CustomUserForm,
@@ -182,3 +185,14 @@ class CustomPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
     success_url = reverse_lazy('account:edit-profile')
     template_name = 'change_password.html'
     success_message = "Your password was successfully updated!"
+
+
+class CreateAddressView(CreateView):
+    model = Address
+    fields = ['country', 'city', 'address', 'zipcode']
+    template_name = 'create_address.html'
+    success_url = reverse_lazy('account:profile')
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)

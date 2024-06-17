@@ -8,7 +8,8 @@ from .views import (
     AuthUserView,
     SuccessAuthenticationView,
     CustomPasswordChangeView,
-    CheckLoginStatusAPIView
+    CheckLoginStatusAPIView,
+    CreateAddressView,
 )
 
 
@@ -27,6 +28,7 @@ urlpatterns = [
     path('authenticate/', AuthUserView.as_view(), name='authenticate'),
     path('success-authentication/', SuccessAuthenticationView.as_view(), name='success-authentication'),
     path('change-password/', CustomPasswordChangeView.as_view(), name='change-password'),
+    path('create-address/', CreateAddressView.as_view(), name='create-address'),
 
     # API view
     path('api/check-login-status/', CheckLoginStatusAPIView.as_view(), name='check-login-status'),
