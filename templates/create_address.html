@@ -1,6 +1,5 @@
 {% extends 'layout/_base.html' %}
 {% load crispy_forms_filters %}
-
 {% load crispy_forms_tags %}
 
 {% block content %}
@@ -8,12 +7,20 @@
     <form method="post">
         {% csrf_token %}
         {{ form|crispy }}
-        <button
-            type="submit"
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-            Save Address
-        </button>
+        <div class="flex justify-center mt-4">
+            <button
+                type="submit"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+                Save Address
+            </button>
+            <a
+                href="{% url 'account:profile' %}"
+                class="ml-2 bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded inline-block"
+            >
+                Back
+            </a>
+        </div>
     </form>
 </div>
 {% endblock %}
