@@ -26,14 +26,15 @@ from django.views.generic import (
     UpdateView,
     TemplateView,
 )
-from rest_framework import viewsets
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import viewsets, status
 from rest_framework.authentication import (
     SessionAuthentication,
     TokenAuthentication,
 )
+from rest_framework.decorators import action
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from .tasks import send_verification_code_to_user
 import json
 
@@ -215,4 +216,12 @@ class AddressViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
 
-        return Address.objects.filter(user=self.request.user)
+        return Address.objects.filter(user=self.request.user, is_deleted=False)
+
+    @action(detail=True, methods=['post'])
+    def delete_address(self, request, pk=None):
+        address = Address.objects.filter(pk=pk, user=self.request.user, is_deleted=False).first()
+        assert address is not None, 'Address not found'
+
+        address.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
