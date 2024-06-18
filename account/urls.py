@@ -1,4 +1,5 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from .views import (
     SignInView,
     LogOutView,
@@ -10,10 +11,14 @@ from .views import (
     CustomPasswordChangeView,
     CheckLoginStatusAPIView,
     CreateAddressView,
+    AddressViewSet,
 )
 
 
 app_name = 'account'
+
+router = DefaultRouter()
+router.register(r'addresses', AddressViewSet, basename='address')
 
 
 urlpatterns = [
@@ -32,4 +37,5 @@ urlpatterns = [
 
     # API view
     path('api/check-login-status/', CheckLoginStatusAPIView.as_view(), name='check-login-status'),
+    path('api/', include(router.urls)),
 ]

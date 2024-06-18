@@ -8,6 +8,7 @@ from .forms import (
     CustomPasswordChangeForm,
     AddressForm,
 )
+from .serializers import AddressSerializer
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
@@ -25,8 +26,14 @@ from django.views.generic import (
     UpdateView,
     TemplateView,
 )
+from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import (
+    SessionAuthentication,
+    TokenAuthentication,
+)
 from .tasks import send_verification_code_to_user
 import json
 
@@ -198,3 +205,14 @@ class CreateAddressView(CreateView):
         form.instance.user = self.request.user
         form.instance.is_active = False
         return super().form_valid(form)
+
+
+class AddressViewSet(viewsets.ReadOnlyModelViewSet):
+
+    serializer_class = AddressSerializer
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+
+        return Address.objects.filter(user=self.request.user)
