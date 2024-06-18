@@ -130,3 +130,7 @@ class Address(LogicalMixin, models.Model):
             Address.objects.filter(user=self.user, is_active=True).update(is_active=False)
             self.is_active = True
             self.save(update_fields=['is_active'])
+
+    @classmethod
+    def get_user_address(cls, pk, user):
+        return cls.objects.filter(pk=pk, user=user, is_deleted=False).first()

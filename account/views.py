@@ -220,7 +220,8 @@ class AddressViewSet(viewsets.ReadOnlyModelViewSet):
 
     @action(detail=True, methods=['post'])
     def delete_address(self, request, pk=None):
-        address = Address.objects.filter(pk=pk, user=self.request.user, is_deleted=False).first()
+
+        address = Address.get_user_address(pk, self.request.user)
         assert address is not None, 'Address not found'
 
         address.delete()
@@ -228,15 +229,19 @@ class AddressViewSet(viewsets.ReadOnlyModelViewSet):
 
     @action(detail=True, methods=['post'])
     def activate_address(self, request, pk=None):
-        address = Address.objects.filter(pk=pk, user=self.request.user, is_deleted=False).first()
+
+        address = Address.get_user_address(pk, self.request.user)
         assert address is not None, 'Address not found'
+
         address.activate()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True, methods=['post'])
     def deactivate_address(self, request, pk=None):
-        address = Address.objects.filter(pk=pk, user=self.request.user, is_deleted=False).first()
+
+        address = Address.get_user_address(pk, self.request.user)
         assert address is not None, 'Address not found'
+
         address.is_active = False
         address.save(update_fields=['is_active'])
         return Response(status=status.HTTP_204_NO_CONTENT)
