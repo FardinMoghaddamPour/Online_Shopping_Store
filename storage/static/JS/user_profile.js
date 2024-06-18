@@ -30,8 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             addressContainer.appendChild(addressDiv);
         });
-
-        // Add event listeners for delete buttons
+        
         const deleteButtons = document.querySelectorAll('.delete-btn');
         deleteButtons.forEach(button => {
             button.addEventListener('click', function() {
@@ -40,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')  // Function to get CSRF token
+                        'X-CSRFToken': getCookie('csrftoken')
                     }
                 })
                 .then(response => {
@@ -56,7 +55,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Add event listeners for activate/deactivate buttons
         const activateButtons = document.querySelectorAll('.activate-btn');
         activateButtons.forEach(button => {
             button.addEventListener('click', function() {
@@ -70,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')  // Function to get CSRF token
+                        'X-CSRFToken': getCookie('csrftoken')
                     }
                 })
                 .then(response => {
@@ -102,7 +100,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Function to get CSRF token
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
