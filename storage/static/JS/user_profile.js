@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <button class="activate-btn" data-id="${address.id}" style="color: ${address.is_active ? 'gray' : 'green'}; margin-left: 10px;">
                         ${address.is_active ? 'Deactivate' : 'Activate'}
                     </button>
+                    <button class="edit-btn" onclick="window.location.href='/edit_address/${address.id}/'" style="color: blue; margin-left: 10px;">Edit</button>
                 </div>
             `;
             addressContainer.appendChild(addressDiv);

@@ -127,22 +127,42 @@ class CustomPasswordChangeForm(PasswordChangeForm):
         return password2
 
 
-class AddressForm(forms.ModelForm):
+class BaseAddressForm(forms.ModelForm):
     class Meta:
         model = Address
-        fields = ['country', 'city', 'address', 'zipcode']  # 'is_active' is excluded
+        fields = ['country', 'city', 'address', 'zipcode']
 
     def __init__(self, *args, **kwargs):
-        super(AddressForm, self).__init__(*args, **kwargs)
+        super(BaseAddressForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.layout = Layout(
-            Field('country', css_class='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 '
-                                       'leading-tight focus:outline-none focus:shadow-outline'),
-            Field('city', css_class='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 '
-                                    'leading-tight focus:outline-none focus:shadow-outline'),
-            Field('address', css_class='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 '
-                                       'leading-tight focus:outline-none focus:shadow-outline'),
-            Field('zipcode', css_class='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 '
-                                       'leading-tight focus:outline-none focus:shadow-outline'),
+            Field(
+                'country',
+                css_class='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight '
+                          'focus:outline-none focus:shadow-outline'
+            ),
+            Field(
+                'city',
+                css_class='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight '
+                          'focus:outline-none focus:shadow-outline'
+            ),
+            Field(
+                'address',
+                css_class='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight '
+                          'focus:outline-none focus:shadow-outline'
+            ),
+            Field(
+                'zipcode',
+                css_class='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight '
+                          'focus:outline-none focus:shadow-outline'
+            ),
         )
+
+
+class AddressForm(BaseAddressForm):
+    pass
+
+
+class AddressUpdateForm(BaseAddressForm):
+    pass

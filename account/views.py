@@ -7,6 +7,7 @@ from .forms import (
     CustomUserForm,
     CustomPasswordChangeForm,
     AddressForm,
+    AddressUpdateForm
 )
 from .serializers import AddressSerializer
 from django.contrib import messages
@@ -245,3 +246,13 @@ class AddressViewSet(viewsets.ReadOnlyModelViewSet):
         address.is_active = False
         address.save(update_fields=['is_active'])
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class EditAddressView(UpdateView):
+    model = Address
+    form_class = AddressUpdateForm
+    template_name = 'edit_address.html'
+    success_url = reverse_lazy('account:profile')
+
+    def get_queryset(self):
+        return Address.objects.filter(user=self.request.user, is_deleted=False)
