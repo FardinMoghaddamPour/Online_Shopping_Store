@@ -1,4 +1,4 @@
-// noinspection JSUnresolvedReference,DuplicatedCode
+// noinspection JSUnresolvedReference,DuplicatedCode,JSUnusedGlobalSymbols
 
 document.addEventListener('DOMContentLoaded', function() {
     const addressContainer = document.querySelector('#addresses');
@@ -20,13 +20,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     <p>Address: ${address.country}, ${address.city}, ${address.address}</p>
                     <p>Zipcode: ${address.zipcode}</p>
                 </div>
-                <div id="delete-btn">
+                <div id="action-btns">
                     <button class="delete-btn" data-id="${address.id}" style="color: red; margin-left: 10px;">X</button>
+                    <button class="activate-btn" data-id="${address.id}" style="color: ${address.is_active ? 'gray' : 'green'}; margin-left: 10px;">
+                        ${address.is_active ? 'Deactivate' : 'Activate'}
+                    </button>
                 </div>
             `;
             addressContainer.appendChild(addressDiv);
         });
 
+        // Add event listeners for delete buttons
         const deleteButtons = document.querySelectorAll('.delete-btn');
         deleteButtons.forEach(button => {
             button.addEventListener('click', function() {
@@ -35,18 +39,58 @@ document.addEventListener('DOMContentLoaded', function() {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
+                        'X-CSRFToken': getCookie('csrftoken')  // Function to get CSRF token
                     }
                 })
                 .then(response => {
                     if (response.ok) {
-                        this.parentElement.parentElement.remove();
+                        this.closest('.flex').remove();
                     } else {
                         throw new Error('Failed to delete address');
                     }
                 })
                 .catch(error => {
                     console.error('Error deleting address:', error);
+                });
+            });
+        });
+
+        // Add event listeners for activate/deactivate buttons
+        const activateButtons = document.querySelectorAll('.activate-btn');
+        activateButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const addressId = this.getAttribute('data-id');
+                const isActive = this.textContent === 'Deactivate';
+                const url = isActive
+                    ? `/api/addresses/${addressId}/deactivate_address/`
+                    : `/api/addresses/${addressId}/activate_address/`;
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')  // Function to get CSRF token
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        if (isActive) {
+                            this.textContent = 'Activate';
+                            this.style.color = 'green';
+                        } else {
+                            document.querySelectorAll('.activate-btn').forEach(btn => {
+                                btn.textContent = 'Activate';
+                                btn.style.color = 'green';
+                            });
+                            this.textContent = 'Deactivate';
+                            this.style.color = 'gray';
+                        }
+                    } else {
+                        throw new Error(`Failed to ${isActive ? 'deactivate' : 'activate'} address`);
+                    }
+                })
+                .catch(error => {
+                    console.error(`Error ${isActive ? 'deactivating' : 'activating'} address:`, error);
                 });
             });
         });
@@ -57,6 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+// Function to get CSRF token
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
