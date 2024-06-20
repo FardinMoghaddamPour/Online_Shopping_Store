@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             addressContainer.appendChild(addressDiv);
         });
-        
+
         const deleteButtons = document.querySelectorAll('.delete-btn');
         deleteButtons.forEach(button => {
             button.addEventListener('click', function() {

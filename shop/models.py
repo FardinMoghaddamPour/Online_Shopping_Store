@@ -247,23 +247,24 @@ class Cart(TimeStampMixin, LogicalMixin, models.Model):
         related_name='cart'
     )
 
-    address = models.OneToOneField(
+    address = models.ForeignKey(
         Address,
         on_delete=models.CASCADE,
         limit_choices_to={'is_active': True},
-        related_name='cart'
+        related_name='carts'
     )
+
     coupon = models.OneToOneField(
         Coupon,
         on_delete=models.CASCADE,
         null=True,
         blank=True,
-        related_name='cart')
+        related_name='cart'
+    )
 
     date_time = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
     quantity = models.PositiveIntegerField(default=0)
-
     total_price = models.DecimalField(
         max_digits=10,
         decimal_places=2,
@@ -271,36 +272,56 @@ class Cart(TimeStampMixin, LogicalMixin, models.Model):
     )
 
     class Meta:
+
         verbose_name = 'Cart'
         verbose_name_plural = 'Carts'
 
     def __str__(self):
+
         return f'Cart - {self.date_time}'
 
     def save(self, *args, **kwargs):
+
         if not self.is_active:
-            if self.order:
-                self.order.is_active = False
-                self.order.save(update_fields=['is_active'])
-
-            if self.coupon:
-                self.coupon.is_active = False
-                self.coupon.save(update_fields=['is_active'])
-
-            if self.order:
-                order_items = self.order.order_items.all()
-                for item in order_items:
-                    product = item.product
-                    if product.quantity >= item.quantity:
-                        product.quantity -= item.quantity
-                        product.save(update_fields=['quantity'])
-
+            self.deactivate_related_objects()
         super().save(*args, **kwargs)
 
+    def deactivate_related_objects(self):
+
+        """
+        Deactivate related objects when the cart is inactive.
+        """
+
+        if self.order:
+            self.order.is_active = False
+            self.order.save(update_fields=['is_active'])
+
+        if self.coupon:
+            self.coupon.is_active = False
+            self.coupon.save(update_fields=['is_active'])
+
+        if self.order:
+            self.update_product_quantities()
+
+    def update_product_quantities(self):
+
+        """
+        Update product quantities based on the order items.
+        """
+
+        order_items = self.order.order_items.all()
+        for item in order_items:
+            product = item.product
+            if product.quantity >= item.quantity:
+                product.quantity -= item.quantity
+                product.save(update_fields=['quantity'])
+
     def calculate_total_price(self):
+
         """
         Calculate the total price of the cart based on order items and applied coupon (if any).
         """
+
         total_price = 0
 
         if self.order:
