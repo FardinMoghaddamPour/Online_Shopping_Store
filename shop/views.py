@@ -63,19 +63,18 @@ class ProductInCategoryListView(ListView):
 class AddToCartView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @staticmethod
-    def post(request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         product_id = request.data.get('product_id')
         product = get_object_or_404(Product, id=product_id)
 
-        cart = request.session.get('cart', {})
+        cart = self.request.session.get('cart', {})
         if product_id in cart:
             cart[product_id]['quantity'] += 1
         else:
             cart[product_id] = {'quantity': 1, 'price': str(product.price)}
 
-        request.session['cart'] = cart
-        request.session.modified = True
+        self.request.session['cart'] = cart
+        self.request.session.modified = True
         return Response({'message': 'Product added to cart'}, status=status.HTTP_200_OK)
 
 
@@ -88,9 +87,8 @@ class CartView(View):
 class CartAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @staticmethod
-    def get(request):
-        cart = request.session.get('cart', {})
+    def get(self, request):
+        cart = self.request.session.get('cart', {})
         cart_items = []
 
         for product_id, item in cart.items():
@@ -115,13 +113,12 @@ class CartAPIView(APIView):
 class UpdateCartAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @staticmethod
-    def post(request):
+    def post(self, request):
         product_id = str(request.data.get('product_id'))
         quantity = request.data.get('quantity')
         product = get_object_or_404(Product, id=product_id)
 
-        cart = request.session.get('cart', {})
+        cart = self.request.session.get('cart', {})
 
         if quantity < 1:
             cart.pop(product_id, None)
@@ -131,8 +128,8 @@ class UpdateCartAPIView(APIView):
             else:
                 cart[product_id] = {'quantity': quantity, 'price': str(product.price)}
 
-        request.session['cart'] = cart
-        request.session.modified = True
+        self.request.session['cart'] = cart
+        self.request.session.modified = True
 
         return Response({'message': 'Cart updated successfully'})
 
@@ -140,14 +137,13 @@ class UpdateCartAPIView(APIView):
 class RemoveFromCartAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @staticmethod
-    def post(request):
+    def post(self, request):
         product_id = str(request.data.get('product_id'))
 
-        cart = request.session.get('cart', {})
+        cart = self.request.session.get('cart', {})
         cart.pop(product_id, None)
 
-        request.session['cart'] = cart
-        request.session.modified = True
+        self.request.session['cart'] = cart
+        self.request.session.modified = True
 
         return Response({'message': 'Item removed from cart successfully'})
