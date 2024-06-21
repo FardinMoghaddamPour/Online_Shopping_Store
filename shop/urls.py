@@ -9,6 +9,7 @@ from .views import (
     CartAPIView,
     UpdateCartAPIView,
     RemoveFromCartAPIView,
+    CheckoutAPIView
 )
 
 
@@ -31,4 +32,5 @@ urlpatterns = [
     path('api/cart/', CartAPIView.as_view(), name='cart-api'),
     path('api/update-cart/', UpdateCartAPIView.as_view(), name='update-cart'),
     path('api/remove-from-cart/', RemoveFromCartAPIView.as_view(), name='remove-from-cart'),
+    path('api/checkout/', CheckoutAPIView.as_view(), name='checkout'),
 ]

@@ -3,6 +3,7 @@ from core.models import LogicalMixin, TimeStampMixin
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models, IntegrityError
+from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from utils.coupon_generator import generate_coupon_code
 
@@ -134,6 +135,8 @@ class Discount(models.Model):
 
 
 class Order(LogicalMixin, models.Model):
+
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='orders', default=None)
     order_date = models.DateTimeField(auto_now_add=True)
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
@@ -142,7 +145,31 @@ class Order(LogicalMixin, models.Model):
         verbose_name_plural = 'Orders'
 
     def __str__(self):
+
         return f'Order - {self.order_date}'
+
+    def create_order_items(self, cart):
+
+        total_price = 0
+
+        for product_id, item in cart.items():
+            product = get_object_or_404(Product, id=product_id)
+            if product.quantity < item['quantity']:
+                raise ValidationError(f'Not enough quantity for product {product.name}')
+            OrderItem.objects.create(
+                product=product,
+                order=self,
+                quantity=item['quantity'],
+                price=item['price']
+            )
+            total_price += float(item['price']) * item['quantity']
+
+            product.quantity -= item['quantity']
+            product.save()
+
+        self.total_price = total_price
+        self.save()
+        return total_price
 
 
 class OrderItem(models.Model):

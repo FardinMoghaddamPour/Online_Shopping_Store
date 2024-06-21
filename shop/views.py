@@ -1,15 +1,21 @@
 from django.contrib import messages
+from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import (
     View,
     ListView,
 )
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
-from .models import Product, Category
+from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .models import (
+    Product,
+    Category,
+    Order,
+)
 
 
 class ProductListView(View):
@@ -147,3 +153,25 @@ class RemoveFromCartAPIView(APIView):
         self.request.session.modified = True
 
         return Response({'message': 'Item removed from cart successfully'})
+
+
+class CheckoutAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @transaction.atomic
+    def post(self, request):
+        cart = self.request.session.get('cart', {})
+
+        if not cart:
+            return Response({'message': 'Your cart is empty'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            order = Order.objects.create(user=request.user)
+            order.create_order_items(cart)
+        except ValidationError as e:
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        self.request.session['cart'] = {}
+        self.request.session.modified = True
+
+        return Response({'message': 'Order created successfully'}, status=status.HTTP_201_CREATED)

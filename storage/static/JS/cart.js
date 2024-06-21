@@ -1,3 +1,5 @@
+// noinspection JSUnresolvedReference,JSUnusedLocalSymbols
+
 document.addEventListener('DOMContentLoaded', function () {
     fetchCartItems();
 
@@ -5,11 +7,8 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch('/api/cart/')
             .then(response => response.json())
             .then(data => {
-                // noinspection JSUnresolvedReference
                 renderCartItems(data.cart_items);
-                // noinspection JSUnresolvedReference
                 updateTotalPrice(data.total_price);
-                // noinspection JSUnresolvedReference
                 toggleCheckoutButton(data.cart_items.length > 0);
             })
             .catch(error => console.error('Error fetching cart items:', error));
@@ -23,7 +22,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const cartItem = document.createElement('div');
             cartItem.classList.add('cart-item');
             cartItem.dataset.productId = item.id;
-            // noinspection JSUnresolvedReference
             cartItem.innerHTML = `
                 <div class="cart-item-details">
                     <h2 class="text-lg font-semibold">${item.name}</h2>
@@ -53,7 +51,6 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // noinspection JSUnusedLocalSymbols
         fetch('/api/update-cart/', {
             method: 'POST',
             headers: {
@@ -70,7 +67,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function removeItem(productId) {
-        // noinspection JSUnusedLocalSymbols
         fetch('/api/remove-from-cart/', {
             method: 'POST',
             headers: {
@@ -100,12 +96,29 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // noinspection DuplicatedCode
+    document.getElementById('checkout-button').addEventListener('click', function () {
+        fetch('/api/checkout/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                if (data.message === 'Order created successfully') {
+                    fetchCartItems();
+                }
+            })
+            .catch(error => console.error('Error during checkout:', error));
+    });
+
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
             const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
+            for (let i = 0; cookies.length > i; i++) {
                 const cookie = cookies[i].trim();
                 if (cookie.substring(0, name.length + 1) === (name + '=')) {
                     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
