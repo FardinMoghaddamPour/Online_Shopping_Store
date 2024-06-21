@@ -133,8 +133,8 @@ class UserProfileView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        is_seller = self.request.user.groups.filter(name='Seller').exists()
-        context['is_seller'] = is_seller
+        is_product_manager = self.request.user.groups.filter(name='Product Manager').exists()
+        context['is_product_manager'] = is_product_manager
         return context
 
 
