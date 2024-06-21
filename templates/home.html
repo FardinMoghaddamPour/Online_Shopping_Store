@@ -1,8 +1,9 @@
 {% extends 'layout/_base.html' %}
+{% load custom_filters %}
 
 {% block content %}
 <div class="container mx-auto py-8">
-    {#Display message#}
+    {# Display message #}
     {% if messages %}
     <div id="message-block" class="w-full h-20 bg-opacity-90 z-50">
         <ul class="messages">
@@ -17,14 +18,26 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
         {% for product in products %}
-        <div class="border p-8">
+        <div class="border p-8 relative">
+            {% if product.discount %}
+            <div class="absolute top-0 right-0 bg-red-500 text-white px-2 py-1 text-sm">
+                {{ product.discount.discount_percentage }}% OFF
+            </div>
+            {% endif %}
             <div class="flex justify-center items-center m-4" style="width: 400px; height: 400px;">
                 <img src="{{ product.image.url }}" alt="{{ product.name }}" class="object-cover">
             </div>
             <div class="mt-4">
                 <h2 class="text-xl font-bold">{{ product.name }}</h2>
                 <p class="text-gray-600">{{ product.about }}</p>
+                {% if product.discount %}
+                <p class="text-lg font-bold mt-2">
+                    <span class="line-through text-gray-500">{{ product.price }} $</span>
+                    <span class="text-red-500">{{ product.price|discounted_price:product.discount.discount_percentage }} $</span>
+                </p>
+                {% else %}
                 <p class="text-lg font-bold mt-2">{{ product.price }} $</p>
+                {% endif %}
                 <button class="add-to-cart-btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
                         data-product-id="{{ product.id }}"
                         data-product-name="{{ product.name }}"

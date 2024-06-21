@@ -30,7 +30,7 @@ class ProductListView(View):
         if 'success_message' in request.session:
             messages.success(request, request.session.pop('success_message'))
 
-        products = Product.objects.filter(is_active=True)
+        products = Product.objects.filter(is_active=True).prefetch_related('discount')
         cart_count = ProductListView.get_cart_count(request)
 
         return render(request, 'home.html', {'products': products, 'cart_count': cart_count})
