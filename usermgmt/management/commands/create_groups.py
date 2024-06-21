@@ -8,17 +8,16 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
 
-        product_manager_group, created = Group.objects.get_or_create(name='Product Manager')
-        supervisor_group, created = Group.objects.get_or_create(name='Supervisor')
-        operator_group, created = Group.objects.get_or_create(name='Operator')
+        created_any = False
 
-        product_manager_permissions = Permission.objects.filter(
-            content_type__model__in=[
+        created_any |= self.create_group_with_permissions(
+            'Product Manager',
+            [
                 'product',
                 'category',
                 'discount'
             ],
-            codename__in=[
+            [
                 'add_product',
                 'change_product',
                 'delete_product',
@@ -33,18 +32,21 @@ class Command(BaseCommand):
                 'view_discount'
             ]
         )
-        product_manager_group.permissions.set(product_manager_permissions)
 
-        supervisor_permissions = Permission.objects.filter(codename__startswith='view')
-        supervisor_group.permissions.set(supervisor_permissions)
+        created_any |= self.create_group_with_permissions(
+            'Supervisor',
+            [],
+            ['view_']
+        )
 
-        operator_permissions = Permission.objects.filter(
-            content_type__model__in=[
+        created_any |= self.create_group_with_permissions(
+            'Operator',
+            [
                 'customuser',
                 'order',
                 'address'
             ],
-            codename__in=[
+            [
                 'add_customuser',
                 'change_customuser',
                 'delete_customuser',
@@ -59,6 +61,29 @@ class Command(BaseCommand):
                 'view_address'
             ]
         )
-        operator_group.permissions.set(operator_permissions)
 
-        self.stdout.write(self.style.SUCCESS('Successfully created groups and assigned permissions'))
+        if created_any:
+            self.stdout.write(self.style.SUCCESS('Successfully created groups and assigned permissions'))
+        else:
+            self.stdout.write(self.style.WARNING('No action had been performed'))
+
+    def create_group_with_permissions(self, group_name, models, codenames):
+
+        group, created = Group.objects.get_or_create(name=group_name)
+
+        if created:
+            self.stdout.write(self.style.SUCCESS(f'Created group {group_name}'))
+        else:
+            self.stdout.write(self.style.WARNING(f'Group {group_name} already exists'))
+
+        if models:
+            permissions = Permission.objects.filter(
+                content_type__model__in=models,
+                codename__in=codenames
+            )
+        else:
+            permissions = Permission.objects.filter(codename__startswith=codenames[0])
+
+        group.permissions.set(permissions)
+
+        return created
