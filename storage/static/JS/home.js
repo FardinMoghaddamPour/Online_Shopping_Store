@@ -1,4 +1,4 @@
-// noinspection JSUnresolvedReference,UnnecessaryLocalVariableJS
+// noinspection DuplicatedCode,JSUnresolvedReference,UnnecessaryLocalVariableJS
 
 document.addEventListener('DOMContentLoaded', function () {
     const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!isUserAuthenticated) {
                 addToLocalStorageCart(productId, productName, productPrice);
             } else {
-                addProductToCart(productId);
+                addProductToCart(productId, productPrice);
             }
         });
     });
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
             updateCartCountOnLoad();
         }
     });
-    
+
     fetch('/api/check-login-status/')
         .then(response => response.json())
         .then(data => {
@@ -59,14 +59,14 @@ function updateLocalStorageCartCount() {
     document.getElementById('cart-count').textContent = cartCount;
 }
 
-function addProductToCart(productId) {
+function addProductToCart(productId, productPrice) {
     fetch('/api/add-to-cart/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRFToken': getCookie('csrftoken'),
         },
-        body: JSON.stringify({ product_id: productId }),
+        body: JSON.stringify({ product_id: productId, product_price: productPrice }),
     })
     .then(response => response.json())
     .then(data => {
@@ -103,7 +103,6 @@ function updateCartCountOnLoad() {
     }
 }
 
-// noinspection DuplicatedCode
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {

@@ -73,11 +73,16 @@ class AddToCartView(APIView):
         product_id = request.data.get('product_id')
         product = get_object_or_404(Product, id=product_id)
 
+        if hasattr(product, 'discount'):
+            price = product.price * (1 - product.discount.discount_percentage / 100)
+        else:
+            price = product.price
+
         cart = self.request.session.get('cart', {})
         if product_id in cart:
             cart[product_id]['quantity'] += 1
         else:
-            cart[product_id] = {'quantity': 1, 'price': str(product.price)}
+            cart[product_id] = {'quantity': 1, 'price': str(price)}
 
         self.request.session['cart'] = cart
         self.request.session.modified = True
