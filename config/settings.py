@@ -25,6 +25,15 @@ INSTALLED_APPS = [
     "usermgmt"
 ]
 
+JAZZMIN_SETTINGS = {
+    'site_title': 'Infinite Shop Admin',
+    'site_header': 'Infinite Shop',
+    'site_brand': 'Infinite Shop',
+    'site_logo': 'Images/Website-Logo-128px.png',
+    'login_logo': 'Images/Website-Logo-128px.png',
+    'login_logo_dark': 'Images/Website-Logo-128px.png',
+}
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
