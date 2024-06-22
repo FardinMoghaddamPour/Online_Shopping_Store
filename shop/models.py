@@ -327,22 +327,6 @@ class Cart(TimeStampMixin, LogicalMixin, models.Model):
             self.coupon.is_active = False
             self.coupon.save(update_fields=['is_active'])
 
-        if self.order:
-            self.update_product_quantities()
-
-    def update_product_quantities(self):
-
-        """
-        Update product quantities based on the order items.
-        """
-
-        order_items = self.order.order_items.all()
-        for item in order_items:
-            product = item.product
-            if product.quantity >= item.quantity:
-                product.quantity -= item.quantity
-                product.save(update_fields=['quantity'])
-
     def calculate_total_price(self):
 
         """
