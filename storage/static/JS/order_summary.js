@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <p class="text-gray-700">Quantity: ${item.quantity}</p>
             </div>
             <div class="cart-item-actions">
-                <span class="text-lg font-semibold">$${item.price}</span>
+                <span class="text-lg font-semibold">$${item.price.toFixed(2)}</span>
             </div>
         `;
         orderItemsContainer.appendChild(orderItem);

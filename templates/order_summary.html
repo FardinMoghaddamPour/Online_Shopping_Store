@@ -1,6 +1,7 @@
 {% load static %}
 
 <!DOCTYPE html>
+<!--suppress CssUnusedSymbol -->
 <html lang="en">
 
 <head>
@@ -8,6 +9,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <title>Order Summary</title>
+    <style>
+        .glass {
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 0.375rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .cart-item-details h2 {
+            color: #4a4a4a;
+            margin-right: 1rem;
+        }
+
+        .cart-item-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .cart-item-description {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 300px;
+        }
+    </style>
 </head>
 
 <body class="bg-gradient-to-t from-[#fbc2eb] to-[#a6c1ee] min-h-screen flex flex-col items-center justify-center">
@@ -23,7 +61,7 @@
         </div>
 
         <div class="mt-8 text-center">
-            <button id="confirm-order-button" class="bg-blue-500 text-white px-6 py-3 rounded-lg">Confirm Order</button>
+            <button id="confirm-order-button" class="bg-blue-500 text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-700 transition-colors">Confirm Order</button>
         </div>
     </main>
     <script src="{% static 'JS/order_summary.js' %}"></script>
