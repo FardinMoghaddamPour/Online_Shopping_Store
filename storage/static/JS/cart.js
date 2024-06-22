@@ -106,9 +106,11 @@ document.addEventListener('DOMContentLoaded', function () {
         })
             .then(response => response.json())
             .then(data => {
-                alert(data.message);
                 if (data.message === 'Order created successfully') {
-                    fetchCartItems();
+                    localStorage.setItem('orderSummary', JSON.stringify(data));
+                    window.location.href = '/order-summary/';
+                } else {
+                    alert(data.message);
                 }
             })
             .catch(error => console.error('Error during checkout:', error));

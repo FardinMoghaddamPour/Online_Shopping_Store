@@ -1,10 +1,12 @@
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import (
     View,
     ListView,
+    TemplateView,
 )
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
@@ -179,4 +181,19 @@ class CheckoutAPIView(APIView):
         self.request.session['cart'] = {}
         self.request.session.modified = True
 
-        return Response({'message': 'Order created successfully'}, status=status.HTTP_201_CREATED)
+        order_items = [{
+            'name': item.product.name,
+            'quantity': item.quantity,
+            'price': item.price
+        } for item in order.order_items.all()]
+
+        return Response({
+            'message': 'Order created successfully',
+            'order_id': order.id,
+            'order_items': order_items,
+            'total_price': order.total_price
+        }, status=status.HTTP_201_CREATED)
+
+
+class OrderSummaryView(LoginRequiredMixin, TemplateView):
+    template_name = 'order_summary.html'

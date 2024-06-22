@@ -9,7 +9,8 @@ from .views import (
     CartAPIView,
     UpdateCartAPIView,
     RemoveFromCartAPIView,
-    CheckoutAPIView
+    CheckoutAPIView,
+    OrderSummaryView,
 )
 
 
@@ -24,6 +25,7 @@ urlpatterns = [
     path('category/', CategoryListView.as_view(), name='category_list'),
     path('category/<int:category_id>/products/', ProductInCategoryListView.as_view(), name='category_products'),
     path('cart/', CartView.as_view(), name='cart'),
+    path('order-summary/', OrderSummaryView.as_view(), name='order-summary'),
 
     # API view
 
