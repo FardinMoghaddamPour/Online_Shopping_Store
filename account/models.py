@@ -18,7 +18,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, TimeStampMixin, LogicalMixi
         message="Enter a valid Iranian phone number."
     )
     password_validator = RegexValidator(
-        regex=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$",
+        regex=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$|^pbkdf2_sha256\$[0-9]+\$.+$",
         message="Password must contain at least 8 characters, including uppercase, lowercase, and digits."
     )
 
