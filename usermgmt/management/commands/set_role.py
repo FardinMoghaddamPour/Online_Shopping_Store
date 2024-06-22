@@ -58,6 +58,7 @@ class Command(BaseCommand):
         else:
 
             user.groups.add(group)
+            user.is_staff = True
             user.save()
             self.stdout.write(
                 self.style.SUCCESS(f'Successfully assigned role "{assigned_role}" to user "{username}"')
