@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <p class="text-gray-700 cart-item-description">${item.description}</p>
                 </div>
                 <div class="cart-item-actions">
-                    <span class="text-lg font-semibold">$${item.price}</span>
+                    <span class="text-lg font-semibold">$${parseFloat(item.price).toFixed(2)}</span>
                     <div class="quantity-selector">
                         <button type="button" class="decrement" data-product-id="${item.id}">-</button>
                         <input type="number" id="quantity-${item.id}" name="quantity-${item.id}" value="${item.quantity}" readonly>
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function updateTotalPrice(totalPrice) {
         const totalPriceElement = document.getElementById('total-price');
-        totalPriceElement.textContent = `$${totalPrice.toFixed(2)}`;
+        totalPriceElement.textContent = `$${parseFloat(totalPrice).toFixed(2)}`;
     }
 
     function toggleCheckoutButton(show) {
