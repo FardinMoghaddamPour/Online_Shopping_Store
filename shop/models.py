@@ -156,13 +156,20 @@ class Order(LogicalMixin, models.Model):
             product = get_object_or_404(Product, id=product_id)
             if product.quantity < item['quantity']:
                 raise ValidationError(f'Not enough quantity for product {product.name}')
+
+            if hasattr(product, 'discount'):
+                price = product.price * (1 - product.discount.discount_percentage / 100)
+            else:
+                price = product.price
+
             OrderItem.objects.create(
                 product=product,
                 order=self,
                 quantity=item['quantity'],
-                price=item['price']
+                price=price
             )
-            total_price += float(item['price']) * item['quantity']
+
+            total_price += float(price) * item['quantity']
 
             product.quantity -= item['quantity']
             product.save()
@@ -190,7 +197,10 @@ class OrderItem(models.Model):
         if self.quantity > self.product.quantity:
             raise ValidationError(f"Insufficient quantity available for {self.product.name}.")
 
-        self.price = self.product.price * self.quantity
+        if hasattr(self.product, 'discount'):
+            self.price = self.product.price * (1 - self.product.discount.discount_percentage / 100)
+        else:
+            self.price = self.product.price * self.quantity
 
         super().save(*args, **kwargs)
 
