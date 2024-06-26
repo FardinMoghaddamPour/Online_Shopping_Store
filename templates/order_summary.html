@@ -51,6 +51,9 @@
 <body class="bg-gradient-to-t from-[#fbc2eb] to-[#a6c1ee] min-h-screen flex flex-col items-center justify-center">
     <main class="w-full max-w-4xl glass p-8 rounded-lg">
         <h1 class="text-2xl font-bold text-center mb-8">Order Summary</h1>
+        <div id="create-address-div" class="mb-8">
+            {#This box will be show only if user does not have a active address#}
+        </div>
         <div id="order-items" class="space-y-4">
             <!-- Order items will be dynamically inserted here -->
         </div>
