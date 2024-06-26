@@ -13,6 +13,7 @@ from .views import (
     CreateAddressView,
     AddressViewSet,
     EditAddressView,
+    CreateAddressAPIView,
 )
 
 
@@ -39,5 +40,6 @@ urlpatterns = [
 
     # API view
     path('api/check-login-status/', CheckLoginStatusAPIView.as_view(), name='check-login-status'),
+    path('api/create-address/', CreateAddressAPIView.as_view(), name='create-address-api'),
     path('api/', include(router.urls)),
 ]

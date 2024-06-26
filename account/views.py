@@ -27,7 +27,7 @@ from django.views.generic import (
     UpdateView,
     TemplateView,
 )
-from rest_framework import viewsets, status
+from rest_framework import generics, viewsets, status
 from rest_framework.authentication import (
     SessionAuthentication,
     TokenAuthentication,
@@ -256,3 +256,12 @@ class EditAddressView(UpdateView):
 
     def get_queryset(self):
         return Address.objects.filter(user=self.request.user, is_deleted=False)
+
+
+class CreateAddressAPIView(generics.CreateAPIView):
+    queryset = Address.objects.all()
+    serializer_class = AddressSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
