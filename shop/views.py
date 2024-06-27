@@ -1,3 +1,4 @@
+from account.models import Address
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
@@ -19,6 +20,7 @@ from .models import (
     Order,
     OrderItem,
     Coupon,
+    Cart,
 )
 from .serializers import OrderSerializer
 
@@ -251,3 +253,46 @@ class CheckCouponAPIView(APIView):
             return Response({'valid': True, 'discount': coupon.amount_of_discount}, status=200)
         except Coupon.DoesNotExist:
             return Response({'valid': False}, status=200)
+
+
+class ConfirmOrderAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = self.request.user
+        try:
+            order = Order.objects.get(user=user, is_active=True)
+        except Order.DoesNotExist:
+            return Response({'message': 'No active order found'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            address = Address.objects.get(user=user, is_active=True)
+        except Address.DoesNotExist:
+            return Response(
+                {
+                    'message': 'You must have an active address to confirm the order.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        coupon_code = request.data.get('coupon_code')
+        coupon = None
+        if coupon_code:
+            try:
+                coupon = Coupon.objects.get(coupon_code=coupon_code, is_active=True)
+            except Coupon.DoesNotExist:
+                pass
+
+        cart = Cart.objects.create(
+            custom_user=user,
+            order=order,
+            address=address,
+            coupon=coupon,
+            is_active=True
+        )
+        cart.calculate_total_price()
+        cart.deactivate_related_objects()
+
+        cart.is_active = False
+        cart.save(update_fields=['is_active'])
+
+        return Response({'message': 'Order confirmed successfully', 'cart_id': cart.id}, status=status.HTTP_200_OK)

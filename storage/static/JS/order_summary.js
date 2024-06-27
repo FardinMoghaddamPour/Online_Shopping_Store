@@ -5,6 +5,10 @@ document.addEventListener('DOMContentLoaded', function () {
     fetchUserAddresses();
     loadCouponFromLocalStorage();
 
+    document.getElementById('confirm-order-button').addEventListener('click', function () {
+        confirmOrder();
+    });
+
     document.getElementById('check-coupon-button').addEventListener('click', function () {
         checkCoupon();
     });
@@ -254,6 +258,42 @@ function applyStoredDiscount() {
         const { discount } = JSON.parse(savedCoupon);
         updateTotalPriceWithDiscount(discount);
     }
+}
+
+function confirmOrder() {
+    const coupon = localStorage.getItem('coupon');
+    const couponCode = coupon ? JSON.parse(coupon).code : null;
+
+    fetch('/api/confirm-order/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+        body: JSON.stringify({ coupon_code: couponCode }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message === 'Order confirmed successfully') {
+            displayConfirmationMessage(data.message, 'text-green-500');
+            setTimeout(() => {
+                window.location.href = 'http://127.0.0.1:8000/';
+            }, 2000);
+        } else {
+            displayConfirmationMessage(data.message, 'text-red-500');
+        }
+    })
+    .catch(error => console.error('Error confirming order:', error));
+}
+
+function displayConfirmationMessage(message, colorClass = 'text-red-500') {
+    const messageDiv = document.getElementById('confirmation-message');
+    messageDiv.textContent = message;
+    messageDiv.classList.remove('hidden', 'text-green-500', 'text-red-500');
+    messageDiv.classList.add(colorClass);
+    setTimeout(() => {
+        messageDiv.classList.add('hidden');
+    }, 5000);
 }
 
 function getCookie(name) {
