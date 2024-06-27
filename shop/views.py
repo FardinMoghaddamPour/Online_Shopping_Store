@@ -17,6 +17,7 @@ from .models import (
     Product,
     Category,
     Order,
+    OrderItem,
 )
 from .serializers import OrderSerializer
 
@@ -174,8 +175,35 @@ class CheckoutAPIView(APIView):
             return Response({'message': 'Your cart is empty'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
+            order = Order.objects.get(user=request.user, is_active=True)
+        except Order.DoesNotExist:
             order = Order.objects.create(user=request.user)
-            order.create_order_items(cart)
+
+        try:
+            for product_id, item in cart.items():
+                product = get_object_or_404(Product, id=product_id)
+
+                if product.quantity < item['quantity']:
+                    raise ValidationError(f'Not enough quantity for product {product.name}')
+
+                order_item, created = OrderItem.objects.get_or_create(
+                    order=order,
+                    product=product,
+                    defaults={'quantity': item['quantity'], 'price': product.price}
+                )
+
+                if not created:
+
+                    order_item.quantity += item['quantity']
+                    order_item.price = product.price * order_item.quantity
+                    order_item.save()
+
+                product.quantity -= item['quantity']
+                product.save()
+
+            order.total_price = sum(item.price for item in order.order_items.all())
+            order.save()
+
         except ValidationError as e:
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
