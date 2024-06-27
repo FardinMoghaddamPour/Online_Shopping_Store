@@ -1,34 +1,8 @@
-// noinspection JSUnresolvedReference,DuplicatedCode
+// noinspection DuplicatedCode,JSUnresolvedReference
 
 document.addEventListener('DOMContentLoaded', function () {
-    const orderSummary = JSON.parse(localStorage.getItem('orderSummary'));
-
-    if (!orderSummary) {
-        alert('No order summary available.');
-        window.location.href = '/cart/';
-        return;
-    }
-
+    fetchOrderSummary();
     fetchUserAddresses();
-
-    const orderItemsContainer = document.getElementById('order-items');
-    orderSummary.order_items.forEach(item => {
-        const orderItem = document.createElement('div');
-        orderItem.classList.add('cart-item');
-        orderItem.innerHTML = `
-            <div class="cart-item-details">
-                <h2 class="text-lg font-semibold">${item.name}</h2>
-                <p class="text-gray-700">Quantity: ${item.quantity}</p>
-            </div>
-            <div class="cart-item-actions">
-                <span class="text-lg font-semibold">$${parseFloat(item.price).toFixed(2)}</span>
-            </div>
-        `;
-        orderItemsContainer.appendChild(orderItem);
-    });
-
-    document.getElementById('total-price').textContent = `$${parseFloat(orderSummary.total_price).toFixed(2)}`;
-    document.getElementById('final-price').textContent = `$${parseFloat(orderSummary.total_price).toFixed(2)}`;
 
     document.getElementById('create-address-button').addEventListener('click', function () {
         const form = document.getElementById('create-address-form');
@@ -39,6 +13,46 @@ document.addEventListener('DOMContentLoaded', function () {
         createAddress();
     });
 });
+
+function fetchOrderSummary() {
+    fetch('/api/active-order/')
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+                window.location.href = '/cart/';
+                return;
+            }
+            renderOrderSummary(data);
+        })
+        .catch(error => console.error('Error fetching order summary:', error));
+}
+
+function renderOrderSummary(data) {
+    const orderItems = data.order_items;
+
+    const orderItemsContainer = document.getElementById('order-items');
+    orderItemsContainer.innerHTML = '';
+
+    orderItems.forEach(item => {
+        const orderItem = document.createElement('div');
+        orderItem.classList.add('cart-item');
+        // noinspection JSDeprecatedSymbols
+        orderItem.innerHTML = `
+            <div class="cart-item-details">
+                <h2 class="text-lg font-semibold">${item.product.name}</h2>
+                <p class="text-gray-700">Quantity: ${item.quantity}</p>
+            </div>
+            <div class="cart-item-actions">
+                <span class="text-lg font-semibold">$${parseFloat(item.price).toFixed(2)}</span>
+            </div>
+        `;
+        orderItemsContainer.appendChild(orderItem);
+    });
+
+    document.getElementById('total-price').textContent = `$${parseFloat(data.total_price).toFixed(2)}`;
+    document.getElementById('final-price').textContent = `$${parseFloat(data.total_price).toFixed(2)}`;
+}
 
 function fetchUserAddresses() {
     fetch('/api/addresses/')

@@ -18,6 +18,7 @@ from .models import (
     Category,
     Order,
 )
+from .serializers import OrderSerializer
 
 
 class ProductListView(View):
@@ -197,3 +198,15 @@ class CheckoutAPIView(APIView):
 
 class OrderSummaryView(LoginRequiredMixin, TemplateView):
     template_name = 'order_summary.html'
+
+
+class ActiveOrderAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            order = Order.objects.get(user=self.request.user, is_active=True)
+            order_data = OrderSerializer(order).data
+            return Response(order_data, status=status.HTTP_200_OK)
+        except Order.DoesNotExist:
+            return Response({'error': 'No active order found'}, status=status.HTTP_404_NOT_FOUND)

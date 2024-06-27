@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => response.json())
             .then(data => {
                 if (data.message === 'Order created successfully') {
-                    localStorage.setItem('orderSummary', JSON.stringify(data));
+                    // localStorage.setItem('orderSummary', JSON.stringify(data));
                     window.location.href = '/order-summary/';
                 } else {
                     alert(data.message);
