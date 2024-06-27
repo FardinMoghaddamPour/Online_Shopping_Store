@@ -1,5 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 from celery import Celery
+from celery.signals import worker_ready
 from django.conf import settings
 import os
 
@@ -19,3 +20,9 @@ app.autodiscover_tasks()
 def debug_task(self):
     # noinspection PyCompatibility
     print(f'Request: {self.request!r}')
+
+
+@worker_ready.connect
+def at_start(sender, **kwargs):
+    from account.tasks import delete_inactive_users
+    delete_inactive_users.apply_async()
