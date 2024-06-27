@@ -3,6 +3,11 @@
 document.addEventListener('DOMContentLoaded', function () {
     fetchOrderSummary();
     fetchUserAddresses();
+    loadCouponFromLocalStorage();
+
+    document.getElementById('check-coupon-button').addEventListener('click', function () {
+        checkCoupon();
+    });
 
     document.getElementById('create-address-button').addEventListener('click', function () {
         const form = document.getElementById('create-address-form');
@@ -50,8 +55,11 @@ function renderOrderSummary(data) {
         orderItemsContainer.appendChild(orderItem);
     });
 
-    document.getElementById('total-price').textContent = `$${parseFloat(data.total_price).toFixed(2)}`;
-    document.getElementById('final-price').textContent = `$${parseFloat(data.total_price).toFixed(2)}`;
+    const totalPrice = parseFloat(data.total_price).toFixed(2);
+    document.getElementById('total-price').textContent = `$${totalPrice}`;
+    document.getElementById('final-price').textContent = `$${totalPrice}`;
+
+    applyStoredDiscount();
 }
 
 function fetchUserAddresses() {
@@ -185,6 +193,67 @@ function createAddress() {
             }
         })
         .catch(error => console.error('Error creating address:', error));
+}
+
+function checkCoupon() {
+    const couponCode = document.getElementById('coupon-code').value;
+
+    fetch('/api/check-coupon/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+        body: JSON.stringify({ coupon: couponCode }),
+    })
+        .then(response => response.json())
+        .then(data => {
+            const couponInput = document.getElementById('coupon-code');
+            const checkButton = document.getElementById('check-coupon-button');
+            if (data.valid) {
+                couponInput.classList.add('border-green-500');
+                couponInput.classList.remove('border-red-500');
+                couponInput.disabled = true;
+                checkButton.style.display = 'none';
+                // Save to local storage
+                localStorage.setItem('coupon', JSON.stringify({ code: couponCode, discount: data.discount }));
+                // Update the total price
+                updateTotalPriceWithDiscount(data.discount);
+            } else {
+                couponInput.classList.add('border-red-500');
+                couponInput.classList.remove('border-green-500');
+            }
+        })
+        .catch(error => console.error('Error checking coupon:', error));
+}
+
+function updateTotalPriceWithDiscount(discount) {
+    const finalPriceElement = document.getElementById('final-price');
+    const currentFinalPrice = parseFloat(finalPriceElement.textContent.replace('$', ''));
+    const newFinalPrice = currentFinalPrice - discount;
+    finalPriceElement.textContent = `$${newFinalPrice.toFixed(2)}`;
+}
+
+function loadCouponFromLocalStorage() {
+    const savedCoupon = localStorage.getItem('coupon');
+    if (savedCoupon) {
+        // noinspection JSUnusedLocalSymbols
+        const { code, discount } = JSON.parse(savedCoupon);
+        const couponInput = document.getElementById('coupon-code');
+        const checkButton = document.getElementById('check-coupon-button');
+        couponInput.value = code;
+        couponInput.classList.add('border-green-500');
+        couponInput.disabled = true;
+        checkButton.style.display = 'none';
+    }
+}
+
+function applyStoredDiscount() {
+    const savedCoupon = localStorage.getItem('coupon');
+    if (savedCoupon) {
+        const { discount } = JSON.parse(savedCoupon);
+        updateTotalPriceWithDiscount(discount);
+    }
 }
 
 function getCookie(name) {

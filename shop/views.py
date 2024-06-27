@@ -18,6 +18,7 @@ from .models import (
     Category,
     Order,
     OrderItem,
+    Coupon,
 )
 from .serializers import OrderSerializer
 
@@ -238,3 +239,15 @@ class ActiveOrderAPIView(APIView):
             return Response(order_data, status=status.HTTP_200_OK)
         except Order.DoesNotExist:
             return Response({'error': 'No active order found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class CheckCouponAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        coupon_code = self.request.data.get('coupon')
+        try:
+            coupon = get_object_or_404(Coupon, coupon_code=coupon_code, is_active=True)
+            return Response({'valid': True, 'discount': coupon.amount_of_discount}, status=200)
+        except Coupon.DoesNotExist:
+            return Response({'valid': False}, status=200)
