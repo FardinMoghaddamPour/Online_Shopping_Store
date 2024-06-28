@@ -3,6 +3,6 @@ from django.conf import settings
 
 
 def send_verification_code(user_email, verification_code):
-    subject = 'Authentication code: Tiny Instagram'
+    subject = 'Authentication code: Online Shopping Store (Infinite Shop)'
     message = f'Your authentication code is: {verification_code}'
     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user_email])
