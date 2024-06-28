@@ -9,7 +9,10 @@ from django.views.generic import (
     ListView,
     TemplateView,
 )
-from rest_framework import status
+from rest_framework import (
+    status,
+    generics,
+)
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -22,7 +25,10 @@ from .models import (
     Coupon,
     Cart,
 )
-from .serializers import OrderSerializer
+from .serializers import (
+    OrderSerializer,
+    ShowOrderSerializer,
+)
 
 
 class ProductListView(View):
@@ -296,3 +302,12 @@ class ConfirmOrderAPIView(APIView):
         cart.save(update_fields=['is_active'])
 
         return Response({'message': 'Order confirmed successfully', 'cart_id': cart.id}, status=status.HTTP_200_OK)
+
+
+class UserOrdersAPIView(generics.ListAPIView):
+
+    serializer_class = ShowOrderSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user).order_by('-order_date')

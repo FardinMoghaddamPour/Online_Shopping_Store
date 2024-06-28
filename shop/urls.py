@@ -13,7 +13,8 @@ from .views import (
     OrderSummaryView,
     ActiveOrderAPIView,
     CheckCouponAPIView,
-    ConfirmOrderAPIView
+    ConfirmOrderAPIView,
+    UserOrdersAPIView,
 )
 
 
@@ -41,4 +42,5 @@ urlpatterns = [
     path('api/active-order/', ActiveOrderAPIView.as_view(), name='active-order'),
     path('api/check-coupon/', CheckCouponAPIView.as_view(), name='check-coupon'),
     path('api/confirm-order/', ConfirmOrderAPIView.as_view(), name='confirm-order'),
+    path('api/orders/', UserOrdersAPIView.as_view(), name='user-orders'),
 ]

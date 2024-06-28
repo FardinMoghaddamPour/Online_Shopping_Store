@@ -100,6 +100,53 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+    const ordersContainer = document.querySelector('#orders');
+
+    fetch('/api/orders/')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        ordersContainer.innerHTML = ''; // Clear any existing content
+        data.forEach(order => {
+            const orderDiv = document.createElement('div');
+            orderDiv.className = 'border rounded-lg shadow-sm p-4 mb-4 bg-white';
+
+            let orderItemsHtml = '<div class="mt-4">';
+            order.order_items.forEach(item => {
+                orderItemsHtml += `
+                    <div class="border-b pb-2 mb-2">
+                        <p class="font-semibold">Product Name: <span class="font-normal">${item.product_name}</span></p>
+                        <p class="font-semibold">Quantity: <span class="font-normal">${item.quantity}</span></p>
+                        <p class="font-semibold">Price: <span class="font-normal">$${item.price}</span></p>
+                    </div>
+                `;
+            });
+            orderItemsHtml += '</div>';
+
+            orderDiv.innerHTML = `
+                <div class="flex justify-between items-center mb-2">
+                    <p class="font-semibold">Order Date: <span class="font-normal">${new Date(order.order_date).toLocaleDateString()}</span></p>
+                    <p class="font-semibold">Total Price: <span class="font-normal">$${order.total_price}</span></p>
+                    <p class="font-semibold">Status: <span class="font-normal">${order.status}</span></p>
+                </div>
+                ${orderItemsHtml}
+            `;
+
+            ordersContainer.appendChild(orderDiv);
+        });
+    })
+    .catch(error => {
+        console.error('Error fetching orders:', error);
+        ordersContainer.innerHTML = '<p class="text-red-500">Error loading orders.</p>';
+    });
+});
+
+
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {

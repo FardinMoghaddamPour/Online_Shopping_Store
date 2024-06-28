@@ -22,6 +22,7 @@ def debug_task(self):
     print(f'Request: {self.request!r}')
 
 
+# noinspection PyUnusedLocal
 @worker_ready.connect
 def at_start(sender, **kwargs):
     from account.tasks import delete_inactive_users

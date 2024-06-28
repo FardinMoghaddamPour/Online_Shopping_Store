@@ -29,3 +29,26 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = '__all__'
+
+
+class ShowOrderItemSerializer(serializers.ModelSerializer):
+
+    product_name = serializers.CharField(source='product.name')
+
+    class Meta:
+        model = OrderItem
+        fields = ['product_name', 'quantity', 'price']
+
+
+class ShowOrderSerializer(serializers.ModelSerializer):
+
+    status = serializers.SerializerMethodField()
+    order_items = ShowOrderItemSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Order
+        fields = ['id', 'order_date', 'total_price', 'status', 'order_items']
+
+    # noinspection PyMethodMayBeStatic
+    def get_status(self, obj):
+        return 'still active' if obj.is_active else 'closed'
