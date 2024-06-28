@@ -1,7 +1,7 @@
 from core.models import TimeStampMixin, LogicalMixin
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, Group, Permission
 from django.core.validators import RegexValidator
-from django.db import models
+from django.db import models, IntegrityError
 from account.managers import UserManager
 
 
@@ -100,8 +100,14 @@ class Address(LogicalMixin, models.Model):
         return f"{self.country}, {self.city} - {self.address}"
 
     def save(self, *args, **kwargs):
+
         if self.is_active:
+            if Address.objects.filter(user=self.user, is_active=True).exclude(id=self.id).exists():
+
+                raise IntegrityError("There can only be one active address per user.")
+
             Address.objects.filter(user=self.user, is_active=True).exclude(id=self.id).update(is_active=False)
+
         super().save(*args, **kwargs)
 
     def delete(self, using=None, keep_parents=False):
