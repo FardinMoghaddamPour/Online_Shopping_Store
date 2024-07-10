@@ -1,12 +1,16 @@
 from pathlib import Path
+# noinspection PyPackageRequirements
+from decouple import AutoConfig, Csv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-fkjp)700n4ow2yyec72svp81thskj%q3uflo_$7t0##6f08(d='
+config = AutoConfig(search_path=BASE_DIR)
 
-DEBUG = True
+SECRET_KEY = config('SECRET_KEY')
 
-ALLOWED_HOSTS = []
+DEBUG = config('DEBUG', default=False, cast=bool)
+
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default=[], cast=Csv())
 
 INSTALLED_APPS = [
     'jazzmin',
@@ -68,8 +72,8 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': config('DATABASE_ENGINE'),
+        'NAME': BASE_DIR / config('DATABASE_NAME'),
     }
 }
 
@@ -124,26 +128,27 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 if DEBUG:
     STATICFILES_DIRS = [BASE_DIR / "storage/static"]
 
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'smtp.gmail.com'
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-    EMAIL_HOST_USER = 'django.social.media.project@gmail.com'
-    EMAIL_HOST_PASSWORD = 'rwxnrgcrxcuxfnxi'
-    DEFAULT_FROM_EMAIL = 'django.social.media.project@gmail.com'
+    EMAIL_BACKEND = config('EMAIL_BACKEND')
+    EMAIL_HOST = config('EMAIL_HOST')
+    EMAIL_PORT = config('EMAIL_PORT', cast=int)
+    EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)
+    EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+    DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
 
 # Celery Settings
 
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_BROKER_BACKEND = "redis://localhost:6379/1"
-CELERY_RESULT_BACKEND = "redis://localhost:6379/2"
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'Asia/Tehran'
+CELERY_BROKER_URL = config('CELERY_BROKER_URL')
+CELERY_BROKER_BACKEND = config('CELERY_BROKER_BACKEND')
+CELERY_RESULT_BACKEND = config('CELERY_RESULT_BACKEND')
+CELERY_ACCEPT_CONTENT = [config('CELERY_ACCEPT_CONTENT')]
+CELERY_RESULT_SERIALIZER = config('CELERY_RESULT_SERIALIZER')
+CELERY_TASK_SERIALIZER = config('CELERY_TASK_SERIALIZER')
+CELERY_TIMEZONE = config('CELERY_TIMEZONE')
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'
-SESSION_COOKIE_AGE = 1209600
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-SESSION_SAVE_EVERY_REQUEST = True
-SESSION_COOKIE_NAME = 'sessionid'
+# Session settings
+SESSION_ENGINE = config('SESSION_ENGINE')
+SESSION_COOKIE_AGE = config('SESSION_COOKIE_AGE', cast=int)
+SESSION_EXPIRE_AT_BROWSER_CLOSE = config('SESSION_EXPIRE_AT_BROWSER_CLOSE', cast=bool)
+SESSION_SAVE_EVERY_REQUEST = config('SESSION_SAVE_EVERY_REQUEST', cast=bool)
+SESSION_COOKIE_NAME = config('SESSION_COOKIE_NAME')
