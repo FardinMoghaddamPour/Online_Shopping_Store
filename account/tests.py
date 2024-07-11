@@ -8,7 +8,7 @@ from django.test import TestCase
 class CustomUserModelTestCase(TestCase):
 
     def setUp(self):
-        # This method will run before every test
+
         self.user_data = {
             'username': 'test_user',
             'password': 'Test@1234',
@@ -124,7 +124,7 @@ class CustomUserModelTestCase(TestCase):
         invalid_user_data['email'] = 'invalid@example.com'
         with self.assertRaises(ValidationError):
             user = CustomUser(**invalid_user_data)
-            user.full_clean()  # This will trigger the validation
+            user.full_clean()
 
     def test_invalid_password(self):
         invalid_user_data = self.user_data.copy()
@@ -133,7 +133,7 @@ class CustomUserModelTestCase(TestCase):
         invalid_user_data['email'] = 'invalid@example.com'
         with self.assertRaises(ValidationError):
             user = CustomUser(**invalid_user_data)
-            user.full_clean()  # This will trigger the validation
+            user.full_clean()
 
     # Default values tests
     def test_default_values_email(self):
